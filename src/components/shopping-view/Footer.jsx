@@ -50,11 +50,11 @@ export default function Footer() {
   }, [dispatch]);
 
   return (
-    <div className="bg-[#000000] p-10">
-      <div className="mx-auto grid max-w-full justify-center lg:grid-cols-1 gap-20">
-        <div className="flex items-center justify-between text-white">
-          <div className="flex flex-col gap-10">
-            <div className="flex flex-col justify-start">
+    <div className="bg-[#000000] p-5 md:p-10">
+      <div className="mx-auto grid max-w-full justify-center lg:grid-cols-1 gap-5 md:gap-20">
+        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between text-white gap-4 md:gap-0">
+          <div className="flex flex-col gap-4 md:gap-10">
+            <div className="flex flex-col items-center md:items-start ustify-start">
               <Link to="/shop/home" className="flex gap-2">
                 <span className="text-lg">TrendHive</span>
               </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
                 Stay ahead with trending finds
               </p>
             </div>
-            <div className="flex flex-wrap gap-5">
+            <div className="flex flex-wrap gap-5 justify-center md:justify-start">
               <Link to={"/shop/home"}>
                 <img src={Whatsapp} height={25} width={25} />
               </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
               </Link>
             </div>
           </div>
-          <div className="relative w-2/4 flex justify-end text-black">
+          <div className="relative md:w-2/4 flex justify-end text-black">
             <Input
               value={message}
               name="message"
@@ -95,13 +95,13 @@ export default function Footer() {
           </div>
           <div className="text-sm flex flex-col gap-2 mt-3">
             <p>+91 {adminInfo?.phone ?? "-"}</p>
-            <div className="flex flex-col">
-              <p>{adminInfo?.address ?? "-"}</p>
-              <p>{adminInfo?.city ?? "-"}</p>
+            <div className="flex flex-row md:flex-col gap-2">
+              <p>{adminInfo?.address ?? "-"},</p>
+              <p>{adminInfo?.city ?? "-"},</p>
               <p>
-                {adminInfo?.state ?? "-"}, {adminInfo?.country ?? "-"}
+                {adminInfo?.state ?? "-"}, {adminInfo?.country ?? "-"},
               </p>
-              <p>{adminInfo?.pincode ?? "-"}</p>
+              <p>{adminInfo?.pincode ?? "-"}.</p>
             </div>
           </div>
         </div>
