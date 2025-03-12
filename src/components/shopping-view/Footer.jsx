@@ -1,5 +1,5 @@
 import Whatsapp from "../../assets/icons/whatsapp.png";
-import Facebook from "../../assets/icons/Facebook-logo.png";
+import Facebook from "../../assets/icons/Facebook-Logo.png";
 import Instagram from "../../assets/icons/instagram-logo.png";
 import Twitter from "../../assets/icons/twitter.png";
 import { ArrowUp, MessageCircle } from "lucide-react";

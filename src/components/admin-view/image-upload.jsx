@@ -24,11 +24,6 @@ function ImageUpload({
 }) {
   const inputRef = useRef(null);
 
-<<<<<<< HEAD
-  console.log(isEditMode, "isEditMode");
-
-=======
->>>>>>> 69e9c83 (base urls updated)
   function handleImageFileChange(event) {
     const selectedFile = event.target.files?.[0];
 
