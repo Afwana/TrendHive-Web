@@ -108,7 +108,11 @@ function ShoppingHome() {
   const BrandCard = (brandItem) => {
     return (
       <div className="flex gap-4 items-center">
-        <Card isFooterBlurred className="border-none" radius="lg">
+        <Card
+          isFooterBlurred
+          className="border-none"
+          radius="lg"
+          onClick={() => handleNavigateToListingPage(brandItem, "brand")}>
           <img
             alt={brandItem.title}
             className="w-[200px] h-[200px]"
@@ -292,7 +296,8 @@ function ShoppingHome() {
                 key={index}
                 isFooterBlurred
                 className="border-none"
-                radius="lg">
+                radius="lg"
+                onClick={() => handleNavigateToListingPage(brandItem, "brand")}>
                 <img
                   alt={brandItem.title}
                   className="w-[200px] h-[200px]"

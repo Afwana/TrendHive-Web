@@ -17,7 +17,7 @@ function ShoppingProductTile({
       brandOptionsMap[product?.brand]
     }\n*Price:* ₹ ${
       product?.salePrice > 0 ? product?.salePrice : product?.price
-    }\n${product?.thumbnail}\n\nIs it still available?`;
+    }\n${product?.thumbnail}\n\nIs it available?`;
 
     const phoneNumber = "916238933760";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(

@@ -76,7 +76,8 @@ function MenuItems() {
   );
 }
 
-function HeaderRightContent() {
+// eslint-disable-next-line react/prop-types
+function HeaderRightContent({ setOpenSheet }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
@@ -95,18 +96,30 @@ function HeaderRightContent() {
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
       <div className="flex justify-start gap-3 items-center">
         <Button
-          onClick={() => navigate("/shop/home")}
+          onClick={() => {
+            navigate("/shop/home");
+            setOpenSheet(false);
+          }}
           variant="outline"
           size="icon"
           className="relative">
           <House className="w-6 h-6" />
         </Button>
-        <span className="block lg:hidden text-base font-bold">Home</span>
+        <span
+          className="block lg:hidden text-base font-bold"
+          onClick={() => {
+            navigate("/shop/home");
+            setOpenSheet(false);
+          }}>
+          Home
+        </span>
       </div>
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
         <div className="flex justify-start gap-3 items-center">
           <Button
-            onClick={() => setOpenCartSheet(true)}
+            onClick={() => {
+              setOpenCartSheet(true);
+            }}
             variant="outline"
             size="icon"
             className="relative">
@@ -116,7 +129,13 @@ function HeaderRightContent() {
             </span>
             <span className="sr-only">User cart</span>
           </Button>
-          <span className="block lg:hidden text-base font-bold">Cart</span>
+          <span
+            className="block lg:hidden text-base font-bold"
+            onClick={() => {
+              setOpenCartSheet(true);
+            }}>
+            Cart
+          </span>
         </div>
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
@@ -129,7 +148,7 @@ function HeaderRightContent() {
       </Sheet>
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild className="flex items-center gap-3">
           <Avatar className="bg-black">
             <AvatarFallback className="bg-black text-white font-extrabold">
               {user?.userName[0].toUpperCase()}
@@ -139,11 +158,19 @@ function HeaderRightContent() {
         <DropdownMenuContent side="right" className="w-56">
           <DropdownMenuLabel>{user?.userName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/shop/listing")}>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate("/shop/listing");
+              setOpenSheet(false);
+            }}>
             <LayoutList className="mr-2 h-4 w-4" />
             Products
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
+          <DropdownMenuItem
+            onClick={() => {
+              navigate("/shop/account");
+              setOpenSheet(false);
+            }}>
             <UserCog className="mr-2 h-4 w-4" />
             Account
           </DropdownMenuItem>
@@ -159,6 +186,7 @@ function HeaderRightContent() {
 }
 
 function ShoppingHeader() {
+  const [openSheet, setOpenSheet] = useState(false);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -175,10 +203,10 @@ function ShoppingHeader() {
             onClick={() => navigate("/shop/search")}
             variant="outline"
             size="icon"
-            className="relative block lg:hidden">
+            className="relative flex items-center justify-center lg:hidden">
             <Search className="w-6 h-6" />
           </Button>
-          <Sheet>
+          <Sheet open={openSheet} onOpenChange={setOpenSheet}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="lg:hidden">
                 <Menu className="h-6 w-6" />
@@ -186,8 +214,7 @@ function ShoppingHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs">
-              {/* <MenuItems /> */}
-              <HeaderRightContent />
+              <HeaderRightContent setOpenSheet={setOpenSheet} />
             </SheetContent>
           </Sheet>
         </div>
