@@ -17,8 +17,6 @@ function ShoppingCheckout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log(currentSelectedAddress, "cartItems");
-
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
       ? cartItems.items.reduce(
@@ -31,7 +29,6 @@ function ShoppingCheckout() {
           0
         )
       : 0;
-  console.log(cartItems);
 
   async function handleCreateOrder() {
     if (cartItems.length === 0) {

@@ -19,7 +19,7 @@ function ShoppingProductTile({
       product?.salePrice > 0 ? product?.salePrice : product?.price
     }\n${product?.thumbnail}\n\nIs it still available?`;
 
-    const phoneNumber = "917025200580";
+    const phoneNumber = "916238933760";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       message
     )}`;

@@ -41,7 +41,6 @@ export default function Footer() {
   useEffect(() => {
     const AdminInfo = async () => {
       const result = await dispatch(fetchAdminInfo()).unwrap();
-      console.log(result);
 
       if (result?.data) {
         setAdminInfo(result?.data);
@@ -49,8 +48,6 @@ export default function Footer() {
     };
     AdminInfo();
   }, [dispatch]);
-
-  console.log(adminInfo);
 
   return (
     <div className="bg-[#000000] p-10">

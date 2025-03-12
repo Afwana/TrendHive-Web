@@ -34,22 +34,17 @@ function AdminBrands() {
 
   const { brandList } = useSelector((state) => state.adminBrand);
   const dispatch = useDispatch();
-  console.log(uploadedImageUrl);
 
   function onSubmit(event) {
     event.preventDefault();
 
     if (currentEditedId !== null) {
-      console.log("Editing brand...");
-
       dispatch(
         editBrand({
           id: currentEditedId,
           formData,
         })
       ).then((data) => {
-        console.log(data, "edit");
-
         if (data?.payload?.success) {
           dispatch(fetchAllBrands());
           setFormData(initialFormData);
@@ -65,15 +60,12 @@ function AdminBrands() {
           image: uploadedImageUrl,
         })
       ).then((data) => {
-        console.log(data);
-
         if (data?.payload?.success) {
           dispatch(fetchAllBrands());
           setImageFile(null);
           setFormData(initialFormData);
           setOpenCreateBrandsDialog(false);
           toast.success("Brand added successfully");
-          console.log(openCreateBrandsDialog);
         }
       });
     }
@@ -98,9 +90,6 @@ function AdminBrands() {
   useEffect(() => {
     dispatch(fetchAllBrands());
   }, [dispatch]);
-
-  console.log(formData, "BrandList");
-  console.log("brand page");
 
   return (
     <Fragment>

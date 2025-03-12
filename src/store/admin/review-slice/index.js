@@ -9,7 +9,7 @@ export const getAllReviewsForAdmin = createAsyncThunk(
   "/review/getAllReviewsForAdmin",
   async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/admin/review/get`
+      `https://trendhive-server.onrender.com/api/admin/review/get`
     );
 
     return response.data;
@@ -20,7 +20,7 @@ export const deleteReview = createAsyncThunk(
   "/review/deleteReview",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/review/delete/${id}`
+      `https://trendhive-server.onrender.com/api/admin/review/delete/${id}`
     );
 
     return result?.data;

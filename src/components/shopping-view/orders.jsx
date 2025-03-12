@@ -46,8 +46,6 @@ function ShoppingOrders() {
     if (orderDetails !== null) setOpenDetailsDialog(true);
   }, [orderDetails]);
 
-  console.log(orderDetails, "orderDetails");
-
   const handleReturnDetails = async (id) => {
     const formData = {
       orderId: id,

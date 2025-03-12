@@ -14,7 +14,6 @@ function Profile() {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.shopProfile);
   const { user } = useSelector((state) => state.auth);
-  console.log(user);
 
   const [isEdit, setIsEdit] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);

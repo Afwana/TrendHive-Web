@@ -12,7 +12,7 @@ export const updateAdminProfile = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.put(
-      "http://localhost:5000/api/admin/profile",
+      "https://trendhive-server.onrender.com/api/admin/profile",
       formData,
       {
         withCredentials: true,
@@ -27,7 +27,7 @@ export const updateAdminPassword = createAsyncThunk(
   "admin/updatePassword",
   async (formData) => {
     const response = await axios.put(
-      "http://localhost:5000/api/admin/password",
+      "https://trendhive-server.onrender.com/api/admin/password",
       formData,
       {
         withCredentials: true,

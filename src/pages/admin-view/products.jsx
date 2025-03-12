@@ -52,15 +52,11 @@ function AdminProducts() {
 
   const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
-  console.log(additionalProductImages);
-  console.log(uploadedImageUrl);
   const lowercaseFormData = {
     ...formData,
     size: formData?.size?.toLowerCase(),
     colours: formData?.colours?.toLowerCase(),
   };
-
-  console.log(lowercaseFormData);
 
   function onSubmit(event) {
     event.preventDefault();
@@ -72,8 +68,6 @@ function AdminProducts() {
             formData: lowercaseFormData,
           })
         ).then((data) => {
-          console.log(data, "edit");
-
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setFormData(initialFormData);
@@ -100,8 +94,6 @@ function AdminProducts() {
   }
 
   const handleAdditionalImagesUpdate = (imageUrls) => {
-    console.log(imageUrls);
-
     setAdditionalProductImages(imageUrls);
     setFormData((prev) => ({
       ...prev,
@@ -131,8 +123,6 @@ function AdminProducts() {
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
-
-  // console.log(isFormValid, "valid");
 
   return (
     <Fragment>

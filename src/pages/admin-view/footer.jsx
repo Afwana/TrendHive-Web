@@ -34,12 +34,10 @@ function AdminFooter() {
   const [isEditing, setIsEditing] = useState(false);
   const { isLoading, messageList } = useSelector((state) => state.adminFooter);
   const dispatch = useDispatch();
-  console.log(messageList);
 
   useEffect(() => {
     const AdminInfo = async () => {
       const result = await dispatch(fetchAdminInfo()).unwrap();
-      console.log(result);
 
       if (result?.data) {
         setFormData(result?.data);
@@ -57,8 +55,6 @@ function AdminFooter() {
     e.preventDefault();
     try {
       await dispatch(addAdress(formData)).unwrap();
-      console.log(formData);
-
       toast.success("Address updated successfully!");
     } catch (error) {
       console.error("Failed to update address:", error);

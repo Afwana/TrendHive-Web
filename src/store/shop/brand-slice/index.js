@@ -9,7 +9,9 @@ const initialState = {
 export const fetchAllBrands = createAsyncThunk(
   "/brand/fetchAllBrands",
   async () => {
-    const result = await axios.get("http://localhost:5000/api/shop/brand/get");
+    const result = await axios.get(
+      "https://trendhive-server.onrender.com/api/shop/brand/get"
+    );
 
     return result?.data;
   }

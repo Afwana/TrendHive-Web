@@ -20,8 +20,6 @@ function Reviews() {
     dispatch(getUserReviews(user?.id));
   }, [dispatch, user?.id]);
 
-  console.log(userReviews, "reviews");
-
   return (
     <Card>
       <CardHeader>

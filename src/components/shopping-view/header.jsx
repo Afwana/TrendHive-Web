@@ -91,8 +91,6 @@ function HeaderRightContent() {
     dispatch(fetchCartItems(user?.id));
   }, [dispatch]);
 
-  console.log(cartItems, "sangam");
-
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
       <div className="flex justify-start gap-3 items-center">

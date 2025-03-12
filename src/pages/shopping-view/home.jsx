@@ -25,8 +25,6 @@ function ShoppingHome() {
   const { categoryList } = useSelector((state) => state.shopCategory);
   const { brandList } = useSelector((state) => state.shopBrand);
 
-  console.log(featureImageList);
-
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
@@ -84,8 +82,6 @@ function ShoppingHome() {
       })
     );
   }, [dispatch]);
-
-  console.log(productList, "productList");
 
   useEffect(() => {
     dispatch(getFeatureImages());

@@ -19,8 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
-// import PaypalReturnPage from "./pages/shopping-view/paypal-return";
-// import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import AdminCategory from "./pages/admin-view/category";
 import AdminBrands from "./pages/admin-view/brand";
@@ -40,8 +38,6 @@ function App() {
   }, [dispatch]);
 
   if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
-
-  console.log(isLoading, user);
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
@@ -96,8 +92,6 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
-          {/* <Route path="paypal-return" element={<PaypalReturnPage />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} /> */}
           <Route path="search" element={<SearchProducts />} />
         </Route>
 

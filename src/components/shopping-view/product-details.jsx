@@ -27,8 +27,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const { reviews } = useSelector((state) => state.shopReview);
 
   function handleRatingChange(getRating) {
-    console.log(getRating, "getRating");
-
     setRating(getRating);
   }
 
@@ -93,8 +91,6 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   useEffect(() => {
     if (productDetails !== null) dispatch(getReviews(productDetails?._id));
   }, [productDetails]);
-
-  console.log(reviews, "reviews");
 
   const averageReview =
     reviews && reviews.length > 0

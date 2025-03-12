@@ -10,7 +10,7 @@ export const fetchAllCategories = createAsyncThunk(
   "/category/fetchAllCategories",
   async () => {
     const result = await axios.get(
-      "http://localhost:5000/api/shop/category/get"
+      "https://trendhive-server.onrender.com/api/shop/category/get"
     );
 
     return result?.data;

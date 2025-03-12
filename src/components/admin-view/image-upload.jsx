@@ -24,8 +24,11 @@ function ImageUpload({
 }) {
   const inputRef = useRef(null);
 
+<<<<<<< HEAD
   console.log(isEditMode, "isEditMode");
 
+=======
+>>>>>>> 69e9c83 (base urls updated)
   function handleImageFileChange(event) {
     const selectedFile = event.target.files?.[0];
 
@@ -75,17 +78,14 @@ function ImageUpload({
     }
   }
 
-  console.log(imageFile);
-
   async function uploadImageToCloudinary() {
     setImageLoadingState(true);
     const data = new FormData();
     data.append("my_file", imageFile);
     const response = await axios.post(
-      "http://localhost:5000/api/admin/products/upload-image",
+      "https://trendhive-server.onrender.com/api/admin/products/upload-image",
       data
     );
-    console.log(response, "response");
 
     if (response?.data?.success) {
       setUploadedImageUrl(response.data.result.url);

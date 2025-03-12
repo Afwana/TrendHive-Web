@@ -10,7 +10,7 @@ export const addMessages = createAsyncThunk(
   "/footer/addMessages",
   async (formData) => {
     const result = await axios.post(
-      "http://localhost:5000/api/shop/footer/add",
+      "https://trendhive-server.onrender.com/api/shop/footer/add",
       formData,
       {
         headers: {
@@ -25,7 +25,9 @@ export const addMessages = createAsyncThunk(
 export const fetchAdminInfo = createAsyncThunk(
   "/footer/fetchAdminInfo",
   async () => {
-    const result = await axios.get("http://localhost:5000/api/shop/footer/get");
+    const result = await axios.get(
+      "https://trendhive-server.onrender.com/api/shop/footer/get"
+    );
 
     return result?.data;
   }
@@ -35,7 +37,7 @@ export const fetchUserMessages = createAsyncThunk(
   "/footer/fetchUserMessages",
   async (id) => {
     const result = await axios.get(
-      `http://localhost:5000/api/shop/footer/get/${id}`
+      `https://trendhive-server.onrender.com/api/shop/footer/get/${id}`
     );
 
     return result?.data;

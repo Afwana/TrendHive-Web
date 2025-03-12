@@ -35,7 +35,6 @@ function AdminCategory() {
 
   const { categoryList } = useSelector((state) => state.adminCategory);
   const dispatch = useDispatch();
-  console.log(uploadedImageUrl);
 
   function onSubmit(event) {
     event.preventDefault();
@@ -47,8 +46,6 @@ function AdminCategory() {
             formData,
           })
         ).then((data) => {
-          console.log(data, "edit");
-
           if (data?.payload?.success) {
             dispatch(fetchAllCategories());
             setFormData(initialFormData);
@@ -92,8 +89,6 @@ function AdminCategory() {
   useEffect(() => {
     dispatch(fetchAllCategories());
   }, [dispatch]);
-
-  console.log(formData, "categoryList");
 
   return (
     <Fragment>

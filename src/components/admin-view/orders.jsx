@@ -43,8 +43,6 @@ function AdminOrdersView() {
     dispatch(getAllOrdersForAdmin());
   }, [dispatch]);
 
-  console.log(orderDetails, "orderList");
-
   console.log(searchedOrder, "searched");
 
   useEffect(() => {
@@ -59,7 +57,6 @@ function AdminOrdersView() {
       order?.orderDate.split("T")[0].includes(searchValue)
     );
   });
-  console.log(orderList);
 
   return (
     <Card>

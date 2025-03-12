@@ -9,7 +9,7 @@ export const fetchAllReturnRequests = createAsyncThunk(
   "/return/fetchAllReturnRequests",
   async () => {
     const response = await axios.get(
-      `http://localhost:5000/api/admin/return/get`
+      `https://trendhive-server.onrender.com/api/admin/return/get`
     );
 
     return response.data;
@@ -20,7 +20,7 @@ export const updateReturnStatus = createAsyncThunk(
   "/return/updateReturnStatus",
   async ({ id, status }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/admin/return/update/${id}`,
+      `https://trendhive-server.onrender.com/api/admin/return/update/${id}`,
       {
         status,
       }
@@ -34,7 +34,7 @@ export const deleteReturnRequest = createAsyncThunk(
   "/return/deleteReturnRequest",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/return/delete/${id}`
+      `https://trendhive-server.onrender.com/api/admin/return/delete/${id}`
     );
 
     return result?.data;

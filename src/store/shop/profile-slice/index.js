@@ -12,7 +12,7 @@ export const updateUserProfile = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.put(
-      "http://localhost:5000/api/shop/profile",
+      "https://trendhive-server.onrender.com/api/shop/profile",
       formData,
       {
         withCredentials: true,
@@ -27,7 +27,7 @@ export const updateUserPassword = createAsyncThunk(
   "shop/updatePassword",
   async (formData) => {
     const response = await axios.put(
-      "http://localhost:5000/api/shop/password",
+      "https://trendhive-server.onrender.com/api/shop/password",
       formData,
       {
         withCredentials: true,

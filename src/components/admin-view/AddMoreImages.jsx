@@ -13,22 +13,18 @@ const AddMoreImages = ({ onImagesUpload, onClose, currentImages }) => {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-    console.log(file);
 
     try {
       setIsUploading(true);
       const data = new FormData();
       data.append("my_file", file);
       const response = await axios.post(
-        "http://localhost:5000/api/admin/products/upload-image",
+        "https://trendhive-server.onrender.com/api/admin/products/upload-image",
         data
       );
-      console.log(response, "response");
       const imageUrl = response?.data?.result?.url;
-      console.log(imageUrl);
 
       const updatedImages = [...additionalImages, imageUrl];
-      console.log(updatedImages);
 
       setAdditionalImages(updatedImages);
 

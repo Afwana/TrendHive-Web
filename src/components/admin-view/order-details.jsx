@@ -27,8 +27,6 @@ function AdminOrderDetailsView({ orderDetails }) {
   const [paymentData, setPaymentData] = useState(initialPayment);
   const dispatch = useDispatch();
 
-  console.log(orderDetails, "orderDetailsorderDetails");
-
   function handleUpdateStatus(event) {
     event.preventDefault();
     const { status } = formData;

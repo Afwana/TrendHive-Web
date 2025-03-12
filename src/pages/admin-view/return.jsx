@@ -43,8 +43,6 @@ function AdminReturn() {
     dispatch(fetchAllReturnRequests());
   }, [dispatch]);
 
-  console.log(returnList, "return");
-
   const filteredReturns = returnList?.filter((item) => {
     const searchValue = keyword.toLowerCase();
     return (
@@ -67,22 +65,6 @@ function AdminReturn() {
   function handleUpdateStatus(event) {
     event.preventDefault();
     const { returnId, orderId, status } = formData;
-    console.log(returnId, orderId, status);
-
-    // dispatch(updateOrderStatus({ id: orderId, orderStatus: status })).then(
-    //   (data) => {
-    //     if (data?.payload?.success) {
-    //       dispatch(fetchAllReturnRequests());
-    //       setFormData({
-    //         returnId: "",
-    //         orderId: "",
-    //         status: "",
-    //       });
-    //       setOpenUpdateStatus(false);
-    //       toast.success(data?.payload?.message);
-    //     }
-    //   }
-    // );
     Promise.all([
       dispatch(updateOrderStatus({ id: orderId, orderStatus: status })),
       dispatch(updateReturnStatus({ id: returnId, status: status })),

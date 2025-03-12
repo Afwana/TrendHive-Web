@@ -10,7 +10,7 @@ export const addNewCategory = createAsyncThunk(
   "/category/addNewCategory",
   async (formData) => {
     const result = await axios.post(
-      "http://localhost:5000/api/admin/category/add",
+      "https://trendhive-server.onrender.com/api/admin/category/add",
       formData,
       {
         headers: {
@@ -26,7 +26,7 @@ export const fetchAllCategories = createAsyncThunk(
   "/category/fetchAllCategories",
   async () => {
     const result = await axios.get(
-      "http://localhost:5000/api/admin/category/get"
+      "https://trendhive-server.onrender.com/api/admin/category/get"
     );
 
     return result?.data;
@@ -37,7 +37,7 @@ export const editCategory = createAsyncThunk(
   "/category/editCategory",
   async ({ id, formData }) => {
     const result = await axios.put(
-      `http://localhost:5000/api/admin/category/edit/${id}`,
+      `https://trendhive-server.onrender.com/api/admin/category/edit/${id}`,
       formData,
       {
         headers: {
@@ -54,7 +54,7 @@ export const deleteCategory = createAsyncThunk(
   "/category/deleteCategory",
   async (id) => {
     const result = await axios.delete(
-      `http://localhost:5000/api/admin/category/delete/${id}`
+      `https://trendhive-server.onrender.com/api/admin/category/delete/${id}`
     );
 
     return result?.data;

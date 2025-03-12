@@ -29,8 +29,6 @@ function AdminReviews() {
     dispatch(getAllReviewsForAdmin());
   }, [dispatch]);
 
-  console.log(reviewList, "reviews");
-
   const filteredReviews = reviewList?.filter((review) => {
     const searchValue = keyword.toLowerCase();
     return (
