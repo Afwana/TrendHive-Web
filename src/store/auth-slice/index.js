@@ -57,12 +57,12 @@ export const logoutUser = createAsyncThunk(
 );
 
 export const checkAuth = createAsyncThunk(
-  "auth/checkAuth",
+  "/auth/checkAuth",
   async (_, { rejectWithValue }) => {
     try {
       // First try with cookies
       const res = await axios.get(
-        "https://trendhive-server.onrender.com/api/authcheck-auth",
+        "https://trendhive-server.onrender.com/api/auth/check-auth",
         {
           withCredentials: true,
         }
@@ -158,7 +158,6 @@ const authSlice = createSlice({
         if (action.payload.success) {
           state.user = action.payload.user;
           state.isAuthenticated = true;
-          // Update token in localStorage if received a new one
           if (action.payload.token) {
             localStorage.setItem("authToken", action.payload.token);
           }
@@ -172,11 +171,8 @@ const authSlice = createSlice({
         state.isLoading = false;
         const token = localStorage.getItem("authToken");
         if (token) {
-          // If we have a token but the request failed, we're in an uncertain state
-          state.isAuthenticated = false; // or true, depending on your needs
+          state.isAuthenticated = false;
           state.user = null;
-          // You might want to keep the token or remove it:
-          // localStorage.removeItem("authToken");
         } else {
           state.isAuthenticated = false;
           state.user = null;
