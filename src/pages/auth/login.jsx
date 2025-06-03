@@ -3,7 +3,7 @@ import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const initialState = {
@@ -14,6 +14,7 @@ const initialState = {
 function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   function onSubmit(event) {
     event.preventDefault();
@@ -21,6 +22,7 @@ function AuthLogin() {
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast.success(data?.payload?.message);
+        navigate("/shop/home");
       } else {
         toast.error(data?.payload?.message);
       }

@@ -8,11 +8,7 @@ function CheckAuth({ isAuthenticated, user, children }) {
     if (!isAuthenticated) {
       return <Navigate to="/auth/login" />;
     } else {
-      if (user?.role === "admin") {
-        return <Navigate to="/admin/dashboard" />;
-      } else {
-        return <Navigate to="/shop/home" />;
-      }
+      return <Navigate to="/shop/home" />;
     }
   }
 
@@ -31,11 +27,7 @@ function CheckAuth({ isAuthenticated, user, children }) {
     (location.pathname.includes("/login") ||
       location.pathname.includes("/register"))
   ) {
-    if (user?.role === "admin") {
-      return <Navigate to="/admin/dashboard" />;
-    } else {
-      return <Navigate to="/shop/home" />;
-    }
+    return <Navigate to="/shop/home" />;
   }
 
   if (

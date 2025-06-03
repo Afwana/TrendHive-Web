@@ -60,18 +60,23 @@ export const checkAuth = createAsyncThunk(
   "/auth/checkauth",
 
   async () => {
-    const response = await axios.get(
-      "https://trendhive-server.onrender.com/api/auth/check-auth",
-      {
-        withCredentials: true,
-        headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
-        },
-      }
-    );
-
-    return response.data;
+    try {
+      const response = await axios.get(
+        "https://trendhive-server.onrender.com/api/auth/check-auth",
+        {
+          withCredentials: true,
+          headers: {
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, proxy-revalidate",
+          },
+        }
+      );
+      console.log("CheckAuth response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("CheckAuth error:", error.response?.data || error.message);
+      throw error;
+    }
   }
 );
 
@@ -101,6 +106,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
+        localStorage.setItem("authToken", action.payload.token);
         state.user = action.payload.success ? action.payload.user : null;
         state.isAuthenticated = action.payload.success;
       })
@@ -118,12 +124,12 @@ const authSlice = createSlice({
         state.isAuthenticated = action.payload.success;
       })
       .addCase(checkAuth.rejected, (state, action) => {
-        state.isLoading = false;
-        state.user = null;
-        state.isAuthenticated = false;
+        const token = localStorage.getItem("authToken");
+        state.isAuthenticated = !!token;
       })
       .addCase(logoutUser.fulfilled, (state, action) => {
         state.isLoading = false;
+        localStorage.removeItem("authToken");
         state.user = null;
         state.isAuthenticated = false;
       });
