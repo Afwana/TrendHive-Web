@@ -61,20 +61,50 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       // First try with cookies
-      const res = await axios.get("/api/auth/check-auth");
+      const res = await axios.get(
+        "https://trendhive-server.onrender.com/api/authcheck-auth",
+        {
+          withCredentials: true,
+        }
+      );
 
-      // If cookie auth fails but localStorage has token
-      if (!res.data.success && localStorage.getItem("authToken")) {
-        const fallbackRes = await axios.get("/api/auth/check-auth", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        });
+      // If successful, return data
+      if (res.data.success) {
+        return res.data;
+      }
+
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        const fallbackRes = await axios.get(
+          "https://trendhive-server.onrender.com/api/auth/check-auth",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         return fallbackRes.data;
       }
 
-      return res.data;
+      // If both methods fail
+      return rejectWithValue("Not authenticated");
     } catch (err) {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        try {
+          const fallbackRes = await axios.get(
+            "https://trendhive-server.onrender.com/api/auth/check-auth",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          return fallbackRes.data;
+        } catch (fallbackError) {
+          return rejectWithValue(fallbackError.response?.data);
+        }
+      }
       return rejectWithValue(err.response?.data);
     }
   }
@@ -106,9 +136,14 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        localStorage.setItem("authToken", action.payload.token);
-        state.user = action.payload.success ? action.payload.user : null;
-        state.isAuthenticated = action.payload.success;
+        if (action.payload.success) {
+          localStorage.setItem("authToken", action.payload.token);
+          state.user = action.payload.user;
+          state.isAuthenticated = true;
+        } else {
+          state.user = null;
+          state.isAuthenticated = false;
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -120,12 +155,32 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.success ? action.payload.user : null;
-        state.isAuthenticated = action.payload.success;
+        if (action.payload.success) {
+          state.user = action.payload.user;
+          state.isAuthenticated = true;
+          // Update token in localStorage if received a new one
+          if (action.payload.token) {
+            localStorage.setItem("authToken", action.payload.token);
+          }
+        } else {
+          state.user = null;
+          state.isAuthenticated = false;
+          localStorage.removeItem("authToken");
+        }
       })
       .addCase(checkAuth.rejected, (state, action) => {
+        state.isLoading = false;
         const token = localStorage.getItem("authToken");
-        state.isAuthenticated = !!token;
+        if (token) {
+          // If we have a token but the request failed, we're in an uncertain state
+          state.isAuthenticated = false; // or true, depending on your needs
+          state.user = null;
+          // You might want to keep the token or remove it:
+          // localStorage.removeItem("authToken");
+        } else {
+          state.isAuthenticated = false;
+          state.user = null;
+        }
       })
       .addCase(logoutUser.fulfilled, (state, action) => {
         state.isLoading = false;
