@@ -57,25 +57,25 @@ export const logoutUser = createAsyncThunk(
 );
 
 export const checkAuth = createAsyncThunk(
-  "/auth/checkauth",
-
-  async () => {
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        "https://trendhive-server.onrender.com/api/auth/check-auth",
-        {
-          withCredentials: true,
+      // First try with cookies
+      const res = await axios.get("/api/auth/check-auth");
+
+      // If cookie auth fails but localStorage has token
+      if (!res.data.success && localStorage.getItem("authToken")) {
+        const fallbackRes = await axios.get("/api/auth/check-auth", {
           headers: {
-            "Cache-Control":
-              "no-store, no-cache, must-revalidate, proxy-revalidate",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-        }
-      );
-      console.log("CheckAuth response:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("CheckAuth error:", error.response?.data || error.message);
-      throw error;
+        });
+        return fallbackRes.data;
+      }
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data);
     }
   }
 );
