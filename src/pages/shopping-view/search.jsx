@@ -8,10 +8,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { useLocation } from "react-router-dom";
+import AuthModal from "./../../components/auth/authModal";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [openAuthModal, setOpenAuthModal] = useState(false);
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
   const { productDetails } = useSelector((state) => state.shopProducts);
@@ -32,36 +34,46 @@ function SearchProducts() {
   }, [key, dispatch, keyword]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    let getCartItems = cartItems.items || [];
+    if (!user) {
+      toast.error("Oops, can't add to cart!!!", {
+        description: "Please login to your account.",
+        action: {
+          label: "Login",
+          onClick: () => setOpenAuthModal(true),
+        },
+      });
+    } else {
+      let getCartItems = cartItems.items || [];
 
-    if (getCartItems.length) {
-      const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
-      );
-      if (indexOfCurrentItem > -1) {
-        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-        if (getQuantity + 1 > getTotalStock) {
-          toast.warning(
-            `Only ${getQuantity} quantity can be added for this item`
-          );
+      if (getCartItems.length) {
+        const indexOfCurrentItem = getCartItems.findIndex(
+          (item) => item.productId === getCurrentProductId
+        );
+        if (indexOfCurrentItem > -1) {
+          const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+          if (getQuantity + 1 > getTotalStock) {
+            toast.warning(
+              `Only ${getQuantity} quantity can be added for this item`
+            );
 
-          return;
+            return;
+          }
         }
       }
-    }
 
-    dispatch(
-      addToCart({
-        userId: user?.id,
-        productId: getCurrentProductId,
-        quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast.success("Product is added to cart");
-      }
-    });
+      dispatch(
+        addToCart({
+          userId: user?.id,
+          productId: getCurrentProductId,
+          quantity: 1,
+        })
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchCartItems(user?.id));
+          toast.success("Product added to cart");
+        }
+      });
+    }
   }
 
   function handleGetProductDetails(getCurrentProductId) {
@@ -86,16 +98,17 @@ function SearchProducts() {
         </div>
       </div>
       {!searchResults.length ? (
-        <h1 className="text-5xl font-extrabold">No result found!</h1>
+        <h1 className="text-3xl font-extrabold">No result found!</h1>
       ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        {searchResults.map((item) => (
-          // eslint-disable-next-line react/jsx-key
-          <ShoppingProductTile
-            handleAddtoCart={handleAddtoCart}
-            product={item}
-            handleGetProductDetails={handleGetProductDetails}
-          />
+        {searchResults.map((item, index) => (
+          <div key={index}>
+            <ShoppingProductTile
+              handleAddtoCart={handleAddtoCart}
+              product={item}
+              handleGetProductDetails={handleGetProductDetails}
+            />
+          </div>
         ))}
       </div>
       <ProductDetailsDialog
@@ -103,6 +116,7 @@ function SearchProducts() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+      <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );
 }

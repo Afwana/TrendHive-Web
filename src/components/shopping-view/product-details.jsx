@@ -158,7 +158,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               </p>
             ) : null}
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
             <p className="text-base">
               Size : {productDetails?.size?.toUpperCase()}
             </p>

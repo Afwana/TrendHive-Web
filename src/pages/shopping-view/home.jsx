@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { fetchAllCategories } from "@/store/shop/category-slice";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
 import NavigationSwiper from "./../../components/ui/NavigationSwipper/index";
+import AuthModal from "./../../components/auth/authModal";
 
 function ShoppingHome() {
   // const [currentSlide, setCurrentSlide] = useState(0);
@@ -24,8 +25,10 @@ function ShoppingHome() {
   const { featureImageList } = useSelector((state) => state.commonFeature);
   const { categoryList } = useSelector((state) => state.shopCategory);
   const { brandList } = useSelector((state) => state.shopBrand);
+  const { cartItems } = useSelector((state) => state.shopCart);
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [openAuthModal, setOpenAuthModal] = useState(false);
 
   const { user } = useSelector((state) => state.auth);
 
@@ -47,19 +50,47 @@ function ShoppingHome() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddtoCart(getCurrentProductId) {
-    dispatch(
-      addToCart({
-        userId: user?.id,
-        productId: getCurrentProductId,
-        quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast.success("Product added to cart");
+  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    if (!user) {
+      toast.error("Oops, can't add to cart!!!", {
+        description: "Please login to your account.",
+        action: {
+          label: "Login",
+          onClick: () => setOpenAuthModal(true),
+        },
+      });
+    } else {
+      let getCartItems = cartItems.items || [];
+
+      if (getCartItems.length) {
+        const indexOfCurrentItem = getCartItems.findIndex(
+          (item) => item.productId === getCurrentProductId
+        );
+        if (indexOfCurrentItem > -1) {
+          const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+          if (getQuantity + 1 > getTotalStock) {
+            toast.warning(
+              `Only ${getQuantity} quantity can be added for this item`
+            );
+
+            return;
+          }
+        }
       }
-    });
+
+      dispatch(
+        addToCart({
+          userId: user?.id,
+          productId: getCurrentProductId,
+          quantity: 1,
+        })
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchCartItems(user?.id));
+          toast.success("Product added to cart");
+        }
+      });
+    }
   }
 
   useEffect(() => {
@@ -324,6 +355,8 @@ function ShoppingHome() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+
+      <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );
 }

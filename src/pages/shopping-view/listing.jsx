@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import AuthModal from "./../../components/auth/authModal";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -47,6 +48,7 @@ function ShoppingListing() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openFilterSheet, setOpenFilterSheet] = useState(false);
+  const [openAuthModal, setOpenAuthModal] = useState(false);
 
   const categorySearchParam = searchParams.get("category");
 
@@ -81,36 +83,46 @@ function ShoppingListing() {
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
-    let getCartItems = cartItems.items || [];
+    if (!user) {
+      toast.error("Oops, can't add to cart!!!", {
+        description: "Please login to your account.",
+        action: {
+          label: "Login",
+          onClick: () => setOpenAuthModal(true),
+        },
+      });
+    } else {
+      let getCartItems = cartItems.items || [];
 
-    if (getCartItems.length) {
-      const indexOfCurrentItem = getCartItems.findIndex(
-        (item) => item.productId === getCurrentProductId
-      );
-      if (indexOfCurrentItem > -1) {
-        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-        if (getQuantity + 1 > getTotalStock) {
-          toast.warning(
-            `Only ${getQuantity} quantity can be added for this item`
-          );
+      if (getCartItems.length) {
+        const indexOfCurrentItem = getCartItems.findIndex(
+          (item) => item.productId === getCurrentProductId
+        );
+        if (indexOfCurrentItem > -1) {
+          const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+          if (getQuantity + 1 > getTotalStock) {
+            toast.warning(
+              `Only ${getQuantity} quantity can be added for this item`
+            );
 
-          return;
+            return;
+          }
         }
       }
-    }
 
-    dispatch(
-      addToCart({
-        userId: user?.id,
-        productId: getCurrentProductId,
-        quantity: 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success) {
-        dispatch(fetchCartItems(user?.id));
-        toast.success("Product added to cart");
-      }
-    });
+      dispatch(
+        addToCart({
+          userId: user?.id,
+          productId: getCurrentProductId,
+          quantity: 1,
+        })
+      ).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchCartItems(user?.id));
+          toast.success("Product added to cart");
+        }
+      });
+    }
   }
 
   useEffect(() => {
@@ -236,6 +248,7 @@ function ShoppingListing() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+      <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );
 }

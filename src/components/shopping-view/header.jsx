@@ -59,7 +59,10 @@ function MenuItems() {
           />
           {keyword && (
             <Button
-              onClick={() => setKeyword("")}
+              onClick={() => {
+                setKeyword("");
+                navigate(`/shop/search`);
+              }}
               variant="ghost"
               size="icon"
               className="absolute top-1/2 -translate-y-1/2 z-10">
@@ -212,8 +215,11 @@ function ShoppingHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2">
+        <Link to="/shop/home" className="lg:flex hidden items-center gap-2">
           <img src={logo} alt="TrendHive" width={200} height={200} />
+        </Link>
+        <Link to="/shop/home" className="flex lg:hidden items-center gap-2">
+          <img src={logo} alt="TrendHive" width={120} height={120} />
         </Link>
         <div className="flex justify-between gap-3">
           <Button
