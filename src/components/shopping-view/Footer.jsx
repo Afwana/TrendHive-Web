@@ -10,10 +10,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessages, fetchAdminInfo } from "@/store/shop/footer-slice";
+import AuthModal from "./../auth/authModal";
 
 export default function Footer() {
   const [message, setMessage] = useState("");
   const [adminInfo, setAdminInfo] = useState();
+  const [openAuthModal, setOpenAuthModal] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const scrollToTop = () => {
@@ -25,13 +27,27 @@ export default function Footer() {
 
   const handleSendMessage = async () => {
     try {
-      const formData = {
-        userId: user?.id,
-        message: message,
-      };
-      await dispatch(addMessages(formData)).unwrap();
-      toast.success("Message send successfullty");
-      setMessage("");
+      if (!user) {
+        toast.error("Message can't send!!!", {
+          description: "Please login to your account.",
+          action: {
+            label: "Login",
+            onClick: () => setOpenAuthModal(true),
+          },
+        });
+      } else {
+        if (!message) {
+          toast.warning("Can't send an empty message");
+        } else {
+          const formData = {
+            userId: user?.id,
+            message: message,
+          };
+          await dispatch(addMessages(formData)).unwrap();
+          toast.success("Message send successfullty");
+          setMessage("");
+        }
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Error sending message.");
@@ -123,6 +139,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );
 }
