@@ -1,6 +1,7 @@
 import {
   House,
   LayoutList,
+  LogIn,
   LogOut,
   Menu,
   Search,
@@ -27,6 +28,8 @@ import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Input } from "@/components/ui/input";
 import logo from "../../assets/TrendHive.png";
+import userIcon from "../../assets/userImage.jpeg";
+import AuthModal from "../auth/authModal";
 
 function MenuItems() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -81,6 +84,7 @@ function HeaderRightContent({ setOpenSheet }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
+  const [openAuthModal, setOpenAuthModal] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -151,7 +155,11 @@ function HeaderRightContent({ setOpenSheet }) {
         <DropdownMenuTrigger asChild className="flex items-center gap-3">
           <Avatar className="bg-black">
             <AvatarFallback className="bg-black text-white font-extrabold">
-              {user?.userName[0].toUpperCase()}
+              {!user ? (
+                <img src={userIcon} alt="user icon" />
+              ) : (
+                user?.userName[0].toUpperCase()
+              )}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
@@ -175,12 +183,21 @@ function HeaderRightContent({ setOpenSheet }) {
             Account
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </DropdownMenuItem>
+          {!user ? (
+            <DropdownMenuItem onClick={() => setOpenAuthModal(true)}>
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );
 }
