@@ -68,14 +68,7 @@ function ShoppingCheckout() {
         phone: currentSelectedAddress?.phone,
         notes: currentSelectedAddress?.notes,
       },
-      // orderStatus: "pending",
-      // paymentMethod: "paypal",
-      // paymentStatus: "pending",
       totalAmount: totalCartAmount,
-      // orderDate: new Date(),
-      // orderUpdateDate: new Date(),
-      // paymentId: "",
-      // payerId: "",
     };
 
     try {
