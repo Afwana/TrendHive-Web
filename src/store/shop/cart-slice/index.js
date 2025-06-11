@@ -8,13 +8,14 @@ const initialState = {
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity }) => {
+  async ({ userId, productId, quantity, size }) => {
     const response = await axios.post(
       "https://trendhive-server.onrender.com/api/shop/cart/add",
       {
         userId,
         productId,
         quantity,
+        size,
       }
     );
 

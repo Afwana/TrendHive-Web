@@ -4,12 +4,25 @@ import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { MessageCircle, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Input } from "../ui/input";
 
 function ShoppingProductTile({
   product,
   handleGetProductDetails,
   handleAddtoCart,
 }) {
+  const [selectedSize, setSelectedSize] = useState("");
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+
   const handleEnquiry = (product) => {
     const message = `Hello, I am interested in the following product\n\n${
       product?.title
@@ -25,6 +38,16 @@ function ShoppingProductTile({
     )}`;
 
     window.open(whatsappURL, "_blank");
+  };
+
+  const handleProductSize = () => {
+    if (!selectedSize) {
+      toast.warning("Please select a size.");
+      return;
+    }
+    handleAddtoCart(product?._id, product?.totalStock, selectedSize);
+    setIsSizeModalOpen(false);
+    setSelectedSize("");
   };
   return (
     <Card className="w-full max-w-sm mx-auto">
@@ -83,11 +106,31 @@ function ShoppingProductTile({
             Out Of Stock
           </Button>
         ) : (
-          <Button
-            onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
-            className="w-full">
-            <ShoppingBag /> Add to cart
-          </Button>
+          <Dialog open={isSizeModalOpen} onOpenChange={setIsSizeModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full">
+                <ShoppingBag /> Add to cart
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Select Size</DialogTitle>
+              </DialogHeader>
+              <div className="flex w-full">
+                <Input
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  className="border-black border-2"
+                />
+              </div>
+              <Button
+                onClick={handleProductSize}
+                disabled={!selectedSize}
+                className="w-full mt-4">
+                Add Size
+              </Button>
+            </DialogContent>
+          </Dialog>
         )}
       </CardFooter>
     </Card>

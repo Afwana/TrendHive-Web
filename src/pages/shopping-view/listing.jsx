@@ -82,7 +82,7 @@ function ShoppingListing() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+  function handleAddtoCart(getCurrentProductId, getTotalStock, sizeSelected) {
     if (!user) {
       toast.error("Oops, can't add to cart!!!", {
         description: "Please login to your account.",
@@ -115,6 +115,7 @@ function ShoppingListing() {
           userId: user?.id,
           productId: getCurrentProductId,
           quantity: 1,
+          size: sizeSelected,
         })
       ).then((data) => {
         if (data?.payload?.success) {

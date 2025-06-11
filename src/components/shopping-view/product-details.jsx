@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { Dialog, DialogContent } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,10 +23,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ShoppingBag } from "lucide-react";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -30,7 +39,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     setRating(getRating);
   }
 
-  function handleAddToCart(getCurrentProductId, getTotalStock) {
+  function handleAddToCart(getCurrentProductId, getTotalStock, sizeSelected) {
     let getCartItems = cartItems.items || [];
 
     if (getCartItems.length) {
@@ -53,6 +62,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         userId: user?.id,
         productId: getCurrentProductId,
         quantity: 1,
+        size: sizeSelected,
       })
     ).then((data) => {
       if (data?.payload?.success) {
@@ -87,6 +97,20 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
       }
     });
   }
+
+  const handleProductSize = () => {
+    if (!selectedSize) {
+      toast.warning("Please select a size.");
+      return;
+    }
+    handleAddToCart(
+      productDetails?._id,
+      productDetails?.totalStock,
+      selectedSize
+    );
+    setIsSizeModalOpen(false);
+    setSelectedSize("");
+  };
 
   useEffect(() => {
     if (productDetails !== null) dispatch(getReviews(productDetails?._id));
@@ -183,16 +207,31 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 Out of Stock
               </Button>
             ) : (
-              <Button
-                className="w-full"
-                onClick={() =>
-                  handleAddToCart(
-                    productDetails?._id,
-                    productDetails?.totalStock
-                  )
-                }>
-                Add to Cart
-              </Button>
+              <Dialog open={isSizeModalOpen} onOpenChange={setIsSizeModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full">
+                    <ShoppingBag /> Add to cart
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Size</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex w-full">
+                    <Input
+                      value={selectedSize}
+                      onChange={(e) => setSelectedSize(e.target.value)}
+                      className="border-black border-2"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleProductSize}
+                    disabled={!selectedSize}
+                    className="w-full mt-4">
+                    Add Size
+                  </Button>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
           <Separator />

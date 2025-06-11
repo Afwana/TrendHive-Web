@@ -33,7 +33,7 @@ function SearchProducts() {
     }
   }, [key, dispatch, keyword]);
 
-  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+  function handleAddtoCart(getCurrentProductId, getTotalStock, sizeSelected) {
     if (!user) {
       toast.error("Oops, can't add to cart!!!", {
         description: "Please login to your account.",
@@ -66,6 +66,7 @@ function SearchProducts() {
           userId: user?.id,
           productId: getCurrentProductId,
           quantity: 1,
+          size: sizeSelected,
         })
       ).then((data) => {
         if (data?.payload?.success) {
