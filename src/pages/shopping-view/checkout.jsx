@@ -56,6 +56,7 @@ function ShoppingCheckout() {
             ? singleCartItem?.salePrice
             : singleCartItem?.price,
         quantity: singleCartItem?.quantity,
+        size: singleCartItem?.size,
       })),
       addressInfo: {
         name: currentSelectedAddress?.name,
