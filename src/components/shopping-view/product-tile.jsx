@@ -22,15 +22,17 @@ function ShoppingProductTile({
 }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+  const [enquirySize, setEnquirySize] = useState("");
+  const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
 
-  const handleEnquiry = (product) => {
+  const handleEnquiry = (product, size) => {
     const message = `Hello, I am interested in the following product\n\n${
       product?.title
-    }\n${categoryOptionsMap[product?.category]} category,\n*Brand:* ${
+    }\n*Category:* ${categoryOptionsMap[product?.category]}\n*Brand:* ${
       brandOptionsMap[product?.brand]
     }\n*Price:* ₹ ${
       product?.salePrice > 0 ? product?.salePrice : product?.price
-    }\n${product?.thumbnail}\n\nIs it available?`;
+    }\n*Size:* ${size}\n${product?.thumbnail}\n\nIs it available?`;
 
     const phoneNumber = "916238933760";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
@@ -40,9 +42,19 @@ function ShoppingProductTile({
     window.open(whatsappURL, "_blank");
   };
 
+  const handleSizeForEnquiry = () => {
+    if (!enquirySize) {
+      toast.error("Please input a size");
+    }
+
+    handleEnquiry(product, enquirySize);
+    setIsEnquiryModalOpen(false);
+    setEnquirySize("");
+  };
+
   const handleProductSize = () => {
     if (!selectedSize) {
-      toast.warning("Please select a size.");
+      toast.warning("Please input a size.");
       return;
     }
     handleAddtoCart(product?._id, product?.totalStock, selectedSize);
@@ -98,9 +110,32 @@ function ShoppingProductTile({
         </CardContent>
       </div>
       <CardFooter className="flex items-center justify-between gap-5">
-        <Button onClick={() => handleEnquiry(product)} className="w-full">
-          <MessageCircle /> Enqiury
-        </Button>
+        <Dialog open={isEnquiryModalOpen} onOpenChange={setIsEnquiryModalOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full">
+              <MessageCircle /> Enqiury
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enter Size</DialogTitle>
+            </DialogHeader>
+            <div className="flex w-full">
+              <Input
+                value={enquirySize}
+                onChange={(e) => setEnquirySize(e.target.value)}
+                className="border-black border-2"
+              />
+            </div>
+            <Button
+              onClick={handleSizeForEnquiry}
+              disabled={!enquirySize}
+              className="w-full mt-4">
+              Add Size
+            </Button>
+          </DialogContent>
+        </Dialog>
+
         {product?.totalStock === 0 ? (
           <Button className="w-full opacity-60 cursor-not-allowed">
             Out Of Stock
@@ -114,7 +149,7 @@ function ShoppingProductTile({
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Select Size</DialogTitle>
+                <DialogTitle>Enter Size</DialogTitle>
               </DialogHeader>
               <div className="flex w-full">
                 <Input

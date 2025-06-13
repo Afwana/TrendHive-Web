@@ -100,7 +100,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   const handleProductSize = () => {
     if (!selectedSize) {
-      toast.warning("Please select a size.");
+      toast.warning("Please input a size.");
       return;
     }
     handleAddToCart(
@@ -215,7 +215,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Select Size</DialogTitle>
+                    <DialogTitle>Enter Size</DialogTitle>
                   </DialogHeader>
                   <div className="flex w-full">
                     <Input
