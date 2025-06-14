@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { loginUser, registerUser } from "@/store/auth-slice";
 import { toast } from "sonner";
 import { registerFormControls } from "./../../config/index";
+import { useNavigate } from "react-router-dom";
 
 const loginInitialState = {
   phoneNumber: "",
@@ -21,12 +22,13 @@ const registerInitialState = {
   password: "",
 };
 
-function AuthModal({ open, setOpen }) {
+function AuthModal({ open, setOpen, redirectPath = "/shop/home" }) {
   const [register, setRegister] = useState(false);
   const [loginFormData, setLoginFormData] = useState(loginInitialState);
   const [registerFormData, setRegisterFormData] =
     useState(registerInitialState);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   function onSubmit(event) {
     event.preventDefault();
@@ -37,6 +39,7 @@ function AuthModal({ open, setOpen }) {
             if (data?.payload?.success) {
               toast.success(data?.payload?.message);
               setRegister(false);
+              navigate(redirectPath);
             } else {
               toast.error(data?.payload?.message);
             }
@@ -45,6 +48,7 @@ function AuthModal({ open, setOpen }) {
             if (data?.payload?.success) {
               toast.success(data?.payload?.message);
               handleDialogClose();
+              navigate(redirectPath);
             } else {
               toast.error(data?.payload?.message);
             }
@@ -64,48 +68,53 @@ function AuthModal({ open, setOpen }) {
           </div>
           <div className="flex flex-col gap-5 w-full p-10">
             <img src={logo} alt="auth-image" className="" />
-            <div className="mx-auto w-full max-w-md">
-              <div className="text-center mb-5">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                  Sign in to your account
-                </h1>
+            <div className="flex flex-col gap-2">
+              <div className="mx-auto w-full max-w-md">
+                <div className="text-center mb-5">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                    Sign in to your account
+                  </h1>
+                  {register ? (
+                    <p className="mt-2 flex items-center justify-center cursor-pointer">
+                      Already have an account
+                      <div
+                        className="font-medium ml-2 text-primary underline"
+                        onClick={() => setRegister(false)}>
+                        Login
+                      </div>
+                    </p>
+                  ) : (
+                    <p className="mt-2 flex items-center justify-center cursor-pointer">
+                      Don&#39;t have an account
+                      <div
+                        className="font-medium ml-2 text-primary underline"
+                        onClick={() => setRegister(true)}>
+                        Register
+                      </div>
+                    </p>
+                  )}
+                </div>
                 {register ? (
-                  <p className="mt-2 flex items-center justify-center cursor-pointer">
-                    Already have an account
-                    <div
-                      className="font-medium ml-2 text-primary underline"
-                      onClick={() => setRegister(false)}>
-                      Login
-                    </div>
-                  </p>
+                  <CommonForm
+                    formControls={registerFormControls}
+                    buttonText={"Sign Up"}
+                    formData={registerFormData}
+                    setFormData={setRegisterFormData}
+                    onSubmit={onSubmit}
+                  />
                 ) : (
-                  <p className="mt-2 flex items-center justify-center cursor-pointer">
-                    Don&#39;t have an account
-                    <div
-                      className="font-medium ml-2 text-primary underline"
-                      onClick={() => setRegister(true)}>
-                      Register
-                    </div>
-                  </p>
+                  <CommonForm
+                    formControls={loginFormControls}
+                    buttonText={"Sign In"}
+                    formData={loginFormData}
+                    setFormData={setLoginFormData}
+                    onSubmit={onSubmit}
+                  />
                 )}
               </div>
-              {register ? (
-                <CommonForm
-                  formControls={registerFormControls}
-                  buttonText={"Sign Up"}
-                  formData={registerFormData}
-                  setFormData={setRegisterFormData}
-                  onSubmit={onSubmit}
-                />
-              ) : (
-                <CommonForm
-                  formControls={loginFormControls}
-                  buttonText={"Sign In"}
-                  formData={loginFormData}
-                  setFormData={setLoginFormData}
-                  onSubmit={onSubmit}
-                />
-              )}
+              <p className="text-sm text-center font-semibold">
+                Forget password?!
+              </p>
             </div>
           </div>
         </div>

@@ -1,12 +1,22 @@
 /* eslint-disable react/prop-types */
-import { Navigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import AuthModal from "../auth/authModal";
+import { Navigate } from "react-router-dom";
 
 function CheckAuth({ isAuthenticated, user, children }) {
   const location = useLocation();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  console.log(authModalOpen);
 
   if (location.pathname === "/") {
     if (!isAuthenticated) {
-      return <Navigate to="/auth/login" />;
+      return (
+        <>
+          <AuthModal open={true} setOpen={setAuthModalOpen} />
+          {children}
+        </>
+      );
     } else {
       return <Navigate to="/shop/home" />;
     }
@@ -19,7 +29,25 @@ function CheckAuth({ isAuthenticated, user, children }) {
       location.pathname.includes("/register")
     )
   ) {
-    return <Navigate to="/auth/login" />;
+    return (
+      <>
+        <AuthModal open={true} setOpen={setAuthModalOpen} />
+      </>
+    );
+  }
+
+  if (
+    isAuthenticated &&
+    (location.pathname.includes("/login") ||
+      location.pathname.includes("/register"))
+  ) {
+    return (
+      <Navigate
+        to="/shop/home"
+        state={{ showAuthModal: true, from: location.pathname }}
+        replace
+      />
+    );
   }
 
   if (
