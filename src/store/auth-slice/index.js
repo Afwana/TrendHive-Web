@@ -110,6 +110,22 @@ export const checkAuth = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  "/auth/forgetPassword",
+
+  async (formData) => {
+    const response = await axios.post(
+      "https://trendhive-server.onrender.com/api/auth/forgetPassword",
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data;
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -181,6 +197,19 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state, action) => {
         state.isLoading = false;
         localStorage.removeItem("authToken");
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
       });

@@ -187,3 +187,20 @@ export const footerAddressFormControls = [
     placeholder: "Enter your phone number",
   },
 ];
+
+export const forgetPasswordControls = [
+  {
+    name: "phoneNumber",
+    label: "Phone Number",
+    placeholder: "Enter your phone number",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "newPassword",
+    label: "New Password",
+    placeholder: "Enter your new password",
+    componentType: "input",
+    type: "password",
+  },
+];
