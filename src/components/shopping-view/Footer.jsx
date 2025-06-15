@@ -9,12 +9,17 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessages, fetchAdminInfo } from "@/store/shop/footer-slice";
+import {
+  addMessages,
+  fetchAdminInfo,
+  fetchMediaLinks,
+} from "@/store/shop/footer-slice";
 import AuthModal from "./../auth/authModal";
 
 export default function Footer() {
   const [message, setMessage] = useState("");
   const [adminInfo, setAdminInfo] = useState();
+  const [mediaLinks, setMediaLinks] = useState();
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -65,6 +70,18 @@ export default function Footer() {
     AdminInfo();
   }, [dispatch]);
 
+  useEffect(() => {
+    const mediaLinks = async () => {
+      const result = await dispatch(fetchMediaLinks()).unwrap();
+
+      if (result?.data) {
+        setMediaLinks(result?.data);
+      }
+    };
+    mediaLinks();
+  }, [dispatch]);
+  console.log(mediaLinks);
+
   return (
     <div className="bg-[#000000] p-5 md:p-10">
       <div className="mx-auto grid max-w-full justify-center lg:grid-cols-1 gap-5 md:gap-20">
@@ -79,16 +96,16 @@ export default function Footer() {
               </p>
             </div>
             <div className="flex flex-wrap gap-5 justify-center md:justify-start">
-              <Link to={"/shop/home"}>
+              <Link to={mediaLinks?.whatsapp} target="_blank">
                 <img src={Whatsapp} height={25} width={25} />
               </Link>
-              <Link to={"/shop/home"}>
+              <Link to={mediaLinks?.instagram} target="_blank">
                 <img src={Instagram} height={25} width={25} />
               </Link>
-              <Link to={"/shop/home"}>
+              <Link to={mediaLinks?.facebook} target="_blank">
                 <img src={Facebook} height={25} width={25} />
               </Link>
-              <Link to={"/shop/home"}>
+              <Link to={mediaLinks?.xtwitter} target="_blank">
                 <img src={Twitter} height={25} width={25} />
               </Link>
             </div>

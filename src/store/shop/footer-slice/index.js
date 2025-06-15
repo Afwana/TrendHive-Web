@@ -44,6 +44,17 @@ export const fetchUserMessages = createAsyncThunk(
   }
 );
 
+export const fetchMediaLinks = createAsyncThunk(
+  "/footer/getMediaLinks",
+  async () => {
+    const result = await axios.get(
+      `https://trendhive-server.onrender.com/api/shop/footer/getMediaLinks`
+    );
+
+    return result?.data;
+  }
+);
+
 const ShopFooterSlice = createSlice({
   name: "shopFooter",
   initialState,
@@ -60,6 +71,17 @@ const ShopFooterSlice = createSlice({
       .addCase(fetchUserMessages.rejected, (state) => {
         state.isLoading = false;
         state.messageList = [];
+      })
+      .addCase(fetchMediaLinks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchMediaLinks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.mediaLinks = action.payload.data;
+      })
+      .addCase(fetchMediaLinks.rejected, (state) => {
+        state.isLoading = false;
+        state.mediaLinks = [];
       });
   },
 });
