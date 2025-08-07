@@ -88,14 +88,19 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         reviewMessage: reviewMsg,
         reviewValue: rating,
       })
-    ).then((data) => {
-      if (data.payload.success) {
-        setRating(0);
-        setReviewMsg("");
-        dispatch(getReviews(productDetails?._id));
-        toast.success("Review added successfully!");
-      }
-    });
+    )
+      .then((data) => {
+        if (data.payload.success) {
+          setRating(0);
+          setReviewMsg("");
+          dispatch(getReviews(productDetails?._id));
+          toast.success("Review added successfully!");
+        }
+      })
+      .catch((error) => {
+        toast.error("You need to purchase product to review it.");
+        console.log(error);
+      });
   }
 
   const handleProductSize = () => {
@@ -124,7 +129,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] overflow-y-scroll overflow-x-hidden h-[600px]">
+      <DialogContent className="grid grid-cols-2 gap-5 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] overflow-y-scroll overflow-x-hidden h-[600px]">
         <div className="relative overflow-hidden rounded-lg">
           <img
             src={productDetails?.thumbnail}
@@ -162,7 +167,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 ))}
           </div>
         </div>
-        <div className="">
+        <div className="px-2">
           <div>
             <h1 className="text-3xl font-extrabold">{productDetails?.title}</h1>
             <p className="text-muted-foreground text-2xl mb-5 mt-4 w-full">
@@ -271,12 +276,15 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                   handleRatingChange={handleRatingChange}
                 />
               </div>
-              <Input
-                name="reviewMsg"
-                value={reviewMsg}
-                onChange={(event) => setReviewMsg(event.target.value)}
-                placeholder="Write a review..."
-              />
+              <div className="px-2">
+                <Input
+                  name="reviewMsg"
+                  value={reviewMsg}
+                  onChange={(event) => setReviewMsg(event.target.value)}
+                  className="w-full"
+                  placeholder="Write a review..."
+                />
+              </div>
               <Button
                 onClick={handleAddReview}
                 disabled={reviewMsg.trim() === ""}>
