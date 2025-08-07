@@ -27,6 +27,18 @@ const forgetInitialState = {
   newPassword: "",
 };
 
+const validatePhoneNumber = (phoneNumber) => {
+  const regex = /^\d+$/;
+  return regex.test(phoneNumber);
+};
+
+const validatePassword = (password) => {
+  // At least one uppercase, one lowercase, one digit, one special char, min 8 chars
+  const regex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return regex.test(password);
+};
+
 function AuthModal({ open, setOpen, redirectPath }) {
   const [register, setRegister] = useState(false);
   const [forgetPassword, setForgetPassword] = useState(false);
@@ -34,12 +46,62 @@ function AuthModal({ open, setOpen, redirectPath }) {
   const [registerFormData, setRegisterFormData] =
     useState(registerInitialState);
   const [forgetFormData, setForgetFormData] = useState(forgetInitialState);
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const validateForm = (formData, isForgetPassword = false) => {
+    const newErrors = {};
+
+    // Phone number validation for all forms
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Phone number is required";
+    } else if (!validatePhoneNumber(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Phone number must contain only digits";
+    } else if (formData.phoneNumber.length < 10) {
+      newErrors.phoneNumber = "Phone number must be at least 10 digits";
+    }
+
+    // Password validation (except for forget password where we might not need it)
+    if (!isForgetPassword) {
+      if (!formData.password) {
+        newErrors.password = "Password is required";
+      } else if (!validatePassword(formData.password)) {
+        newErrors.password =
+          "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long";
+      }
+    }
+
+    // For forget password form, validate newPassword
+    if (isForgetPassword && !formData.newPassword) {
+      newErrors.newPassword = "New password is required";
+    } else if (isForgetPassword && !validatePassword(formData.newPassword)) {
+      newErrors.newPassword =
+        "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long";
+    }
+
+    // For register form, validate username
+    if (register && !formData.userName) {
+      newErrors.userName = "Username is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   function onSubmit(event) {
     event.preventDefault();
 
+    let isValid;
+    if (forgetPassword) {
+      isValid = validateForm(forgetFormData, true);
+    } else if (register) {
+      isValid = validateForm(registerFormData);
+    } else {
+      isValid = validateForm(loginFormData);
+    }
+
+    if (!isValid) return;
     {
       forgetPassword
         ? dispatch(resetPassword(forgetFormData)).then((data) => {
@@ -74,7 +136,19 @@ function AuthModal({ open, setOpen, redirectPath }) {
 
   function handleDialogClose() {
     setOpen(false);
+    setErrors({});
   }
+
+  const handleFormDataChange = (formData, setFormData, field) => (e) => {
+    // For phone number field, only allow digits
+    if (field === "phoneNumber") {
+      const value = e.target.value.replace(/\D/g, "");
+      setFormData({ ...formData, [field]: value });
+    } else {
+      setFormData({ ...formData, [field]: e.target.value });
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="max-w-[90vw] sm:max-w-[80vw] lg:max-w-[60vw] min-[2560px]:max-w-[50vw] overflow-hidden h-[550px] min-[2560px]:h-[700px]">
@@ -91,6 +165,8 @@ function AuthModal({ open, setOpen, redirectPath }) {
                 formData={forgetFormData}
                 setFormData={setForgetFormData}
                 onSubmit={onSubmit}
+                errors={errors}
+                handleChange={handleFormDataChange}
               />
             ) : (
               <div className="flex flex-col gap-2">
@@ -126,6 +202,8 @@ function AuthModal({ open, setOpen, redirectPath }) {
                       formData={registerFormData}
                       setFormData={setRegisterFormData}
                       onSubmit={onSubmit}
+                      errors={errors}
+                      handleChange={handleFormDataChange}
                     />
                   ) : (
                     <CommonForm
@@ -134,6 +212,8 @@ function AuthModal({ open, setOpen, redirectPath }) {
                       formData={loginFormData}
                       setFormData={setLoginFormData}
                       onSubmit={onSubmit}
+                      errors={errors}
+                      handleChange={handleFormDataChange}
                     />
                   )}
                 </div>
