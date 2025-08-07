@@ -128,8 +128,19 @@ export default function Footer() {
           </div>
           <div className="text-sm flex flex-col gap-2 mt-3">
             <p>+91 {adminInfo?.phone ?? "-"}</p>
-            <div className="flex flex-row md:flex-col gap-2">
-              <p>{adminInfo?.address ?? "-"},</p>
+            <div className="flex flex-col gap-2">
+              {adminInfo?.address ? (
+                adminInfo.address.length > 38 ? (
+                  <>
+                    <p>{adminInfo.address.substring(0, 38)}</p>
+                    <p>{adminInfo.address.substring(38)}</p>
+                  </>
+                ) : (
+                  <p>{adminInfo.address}</p>
+                )
+              ) : (
+                <p>-</p>
+              )}
               <p>{adminInfo?.city ?? "-"},</p>
               <p>
                 {adminInfo?.state ?? "-"}, {adminInfo?.country ?? "-"},
@@ -139,10 +150,10 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          <div
-            className="flex gap-2 cursor-pointer items-start justify-end"
-            onClick={scrollToTop}>
-            <div className="flex items-center rounded-full justify-center p-2 bg-white">
+          <div className="flex gap-2 cursor-pointer items-start justify-end">
+            <div
+              className="flex items-center rounded-full justify-center p-2 bg-white"
+              onClick={scrollToTop}>
               <ArrowUp color="black" />
             </div>
           </div>
