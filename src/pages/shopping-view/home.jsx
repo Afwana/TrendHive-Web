@@ -16,6 +16,13 @@ import { fetchAllCategories } from "@/store/shop/category-slice";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
 import NavigationSwiper from "./../../components/ui/NavigationSwipper/index";
 import AuthModal from "./../../components/auth/authModal";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 function ShoppingHome() {
   // const [currentSlide, setCurrentSlide] = useState(0);
@@ -29,6 +36,8 @@ function ShoppingHome() {
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [api, setApi] = useState();
+  // const [current, setCurrent] = useState(0);
 
   const { user } = useSelector((state) => state.auth);
 
@@ -100,13 +109,15 @@ function ShoppingHome() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
-  //   }, 15000);
+  useEffect(() => {
+    if (!api) return;
 
-  //   return () => clearInterval(timer);
-  // }, [featureImageList]);
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [api]);
 
   useEffect(() => {
     dispatch(
@@ -170,92 +181,36 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="w-full h-full overflow-hidden">
-        <div className="flex flex-col gap-3 md:hidden">
+        <div className="flex w-full">
           {featureImageList && featureImageList.length > 0 ? (
-            featureImageList.map((slide, index) => (
-              <img
-                src={slide?.image}
-                key={index}
-                className="top-0 left-0 w-full h-full object-cover"
-              />
-            ))
+            <Carousel
+              setApi={setApi}
+              opts={{
+                loop: true,
+              }}
+              className="w-full">
+              <CarouselContent>
+                {featureImageList.map((slide, index) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1">
+                      <img
+                        src={slide?.image}
+                        alt={`Feature ${index + 1}`}
+                        className="w-full h-auto object-cover rounded-lg"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           ) : (
             <p className="text-red-500 text-sm font-bold">
               Load..., Backend is fixing something here....
             </p>
           )}
         </div>
-        <div className="md:flex flex-col gap-3 hidden lg:hidden">
-          <div className="grid grid-cols-2 gap-5">
-            <img
-              src={featureImageList[0]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-            <img
-              src={featureImageList[1]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex">
-            <img
-              src={featureImageList[2]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-          </div>
-        </div>
-        <div className="lg:flex gap-5 hidden max-w-full">
-          <div className="flex w-2/3">
-            <img
-              src={featureImageList[0]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex flex-col gap-5 w-1/3">
-            <img
-              src={featureImageList[1]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-            <img
-              src={featureImageList[2]?.image}
-              className="top-0 left-0 w-full h-full object-cover"
-            />
-          </div>
-        </div>
-        {/* {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((slide, index) => (
-              <img
-                src={slide?.image}
-                key={index}
-                className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
-              />
-            ))
-          : null} */}
-        {/* <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
-            )
-          }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80">
-          <ChevronLeftIcon className="w-4 h-4" />
-        </Button> */}
-        {/* <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>
-            setCurrentSlide(
-              (prevSlide) => (prevSlide + 1) % featureImageList.length
-            )
-          }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80">
-          <ChevronRightIcon className="w-4 h-4" />
-        </Button> */}
       </div>
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
