@@ -53,7 +53,6 @@ function AuthModal({ open, setOpen, redirectPath }) {
   const validateForm = (formData, isForgetPassword = false) => {
     const newErrors = {};
 
-    // Phone number validation for all forms
     if (!formData.phoneNumber) {
       newErrors.phoneNumber = "Phone number is required";
     } else if (!validatePhoneNumber(formData.phoneNumber)) {
@@ -62,7 +61,6 @@ function AuthModal({ open, setOpen, redirectPath }) {
       newErrors.phoneNumber = "Phone number must be at least 10 digits";
     }
 
-    // Password validation (except for forget password where we might not need it)
     if (!isForgetPassword) {
       if (!formData.password) {
         newErrors.password = "Password is required";
@@ -72,7 +70,6 @@ function AuthModal({ open, setOpen, redirectPath }) {
       }
     }
 
-    // For forget password form, validate newPassword
     if (isForgetPassword && !formData.newPassword) {
       newErrors.newPassword = "New password is required";
     } else if (isForgetPassword && !validatePassword(formData.newPassword)) {
@@ -80,7 +77,6 @@ function AuthModal({ open, setOpen, redirectPath }) {
         "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long";
     }
 
-    // For register form, validate username
     if (register && !formData.userName) {
       newErrors.userName = "Username is required";
     }
@@ -140,7 +136,6 @@ function AuthModal({ open, setOpen, redirectPath }) {
   }
 
   const handleFormDataChange = (formData, setFormData, field) => (e) => {
-    // For phone number field, only allow digits
     if (field === "phoneNumber") {
       const value = e.target.value.replace(/\D/g, "");
       setFormData({ ...formData, [field]: value });
