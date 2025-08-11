@@ -57,25 +57,40 @@ function ShoppingListing() {
   }
 
   function handleFilter(getSectionId, getCurrentOption) {
-    let cpyFilters = { ...filters };
-    const indexOfCurrentSection = Object.keys(cpyFilters).indexOf(getSectionId);
+    setFilters((prevFilters) => {
+      // Create a copy of previous filters
+      const newFilters = { ...prevFilters };
 
-    if (indexOfCurrentSection === -1) {
-      cpyFilters = {
-        ...cpyFilters,
-        [getSectionId]: [getCurrentOption],
-      };
-    } else {
-      const indexOfCurrentOption =
-        cpyFilters[getSectionId].indexOf(getCurrentOption);
+      // Initialize the section if it doesn't exist
+      if (!newFilters[getSectionId]) {
+        newFilters[getSectionId] = [];
+      }
 
-      if (indexOfCurrentOption === -1)
-        cpyFilters[getSectionId].push(getCurrentOption);
-      else cpyFilters[getSectionId].splice(indexOfCurrentOption, 1);
-    }
+      // Check if the option already exists in the section
+      const optionIndex = newFilters[getSectionId].indexOf(getCurrentOption);
 
-    setFilters(cpyFilters);
-    sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
+      if (optionIndex === -1) {
+        // Add the option if it's not already present
+        newFilters[getSectionId] = [
+          ...newFilters[getSectionId],
+          getCurrentOption,
+        ];
+      } else {
+        // Remove the option if it's already present
+        newFilters[getSectionId] = newFilters[getSectionId].filter(
+          (item, index) => index !== optionIndex
+        );
+
+        // Remove the section if it's empty
+        if (newFilters[getSectionId].length === 0) {
+          delete newFilters[getSectionId];
+        }
+      }
+
+      // Save to session storage
+      sessionStorage.setItem("filters", JSON.stringify(newFilters));
+      return newFilters;
+    });
   }
 
   function handleGetProductDetails(getCurrentProductId) {
