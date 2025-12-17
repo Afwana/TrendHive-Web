@@ -109,11 +109,11 @@ function ShoppingProductTile({
           </div>
         </CardContent>
       </div>
-      <CardFooter className="flex items-center justify-between gap-5">
+      <CardFooter className="flex flex-col lg:flex-row items-center justify-between gap-3 md:gap-5">
         <Dialog open={isEnquiryModalOpen} onOpenChange={setIsEnquiryModalOpen}>
           <DialogTrigger asChild>
             <Button className="w-full">
-              <MessageCircle /> Enqiury
+              <MessageCircle /> Enquiry
             </Button>
           </DialogTrigger>
           <DialogContent>

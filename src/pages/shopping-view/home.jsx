@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardFooter } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,7 +10,6 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import { toast } from "sonner";
-import { fetchAllCategories } from "@/store/shop/category-slice";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
 import NavigationSwiper from "./../../components/ui/NavigationSwipper/index";
 import AuthModal from "./../../components/auth/authModal";
@@ -23,6 +20,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fetchAllCategories } from "@/store/shop/category-slice";
 
 function ShoppingHome() {
   // const [currentSlide, setCurrentSlide] = useState(0);
@@ -134,46 +132,18 @@ function ShoppingHome() {
     dispatch(fetchAllBrands());
   }, [dispatch]);
 
-  const CategoryCard = (item) => {
+  const BrandCard = (brandItem) => {
     return (
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-4 ml-20">
         <div className="flex flex-col items-center cursor-pointer">
           <div
-            onClick={() => handleNavigateToListingPage(item, "category")}
-            className="hover:shadow-lg flex flex-col items-center w-24 h-24 rounded-full bg-cover bg-center mb-2"
+            onClick={() => handleNavigateToListingPage(brandItem, "category")}
+            className="hover:shadow-lg flex flex-col items-center w-28 h-28 rounded-full bg-cover bg-center mb-2 border-2 border-gray-300"
             style={{
-              backgroundImage: `url(${item.image})`,
+              backgroundImage: `url(${brandItem.image})`,
             }}></div>
-          <span className="font-medium text-center">{item.title}</span>
+          <span className="font-medium text-center">{brandItem.title}</span>
         </div>
-      </div>
-    );
-  };
-
-  const BrandCard = (brandItem) => {
-    return (
-      <div className="flex gap-4 items-center">
-        <Card
-          isFooterBlurred
-          className="border-none"
-          radius="lg"
-          onClick={() => handleNavigateToListingPage(brandItem, "brand")}>
-          <img
-            alt={brandItem.title}
-            className="w-[200px] h-[200px]"
-            src={brandItem.image}
-          />
-          <CardFooter className="justify-center border-1 overflow-hidden py-1 rounded-large items-center w-full mt-5">
-            <Button
-              className="text-tiny text-white bg-black"
-              color="default"
-              radius="lg"
-              size="lg"
-              variant="flat">
-              {brandItem.title}
-            </Button>
-          </CardFooter>
-        </Card>
       </div>
     );
   };
@@ -196,7 +166,7 @@ function ShoppingHome() {
                       <img
                         src={slide?.image}
                         alt={`Feature ${index + 1}`}
-                        className="w-full h-auto object-cover rounded-lg"
+                        className="w-full h-auto lg:h-[500px] object-fill rounded-lg"
                       />
                     </div>
                   </CarouselItem>
@@ -212,38 +182,21 @@ function ShoppingHome() {
           )}
         </div>
       </div>
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Shop by category
-          </h2>
-          <div className="hidden lg:block">
-            <NavigationSwiper
-              data={categoryList}
-              SlideComponent={CategoryCard}
-              slidesPerView={8}
-            />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-4 lg:hidden">
-            {categoryList.map((categoryItem, index) => (
+      <section className="bg-gray-50">
+        <div className="flex items-center justify-center w-full gap-4 pt-12 px-5">
+          {categoryList &&
+            categoryList.map((category) => (
               <div
-                key={index}
-                className="flex flex-col items-center cursor-pointer">
-                <div
-                  key={index}
-                  onClick={() =>
-                    handleNavigateToListingPage(categoryItem, "category")
-                  }
-                  className="hover:shadow-lg flex flex-col items-center w-24 h-24 rounded-full bg-cover bg-center mb-2"
-                  style={{
-                    backgroundImage: `url(${categoryItem.image})`,
-                  }}></div>
-                <span className="font-medium text-center">
-                  {categoryItem.title}
-                </span>
+                key={category._id}
+                className="flex items-center justify-center px-3 py-1 border border-primary rounded-full w-40 cursor-pointer"
+                onClick={() =>
+                  navigate(`/shop/listing?category=${category._id}`)
+                }>
+                <p className="text-2xl font-bold text-primary">
+                  {category.title}
+                </p>
               </div>
             ))}
-          </div>
         </div>
       </section>
 
@@ -252,7 +205,7 @@ function ShoppingHome() {
           <h2 className="text-3xl font-bold text-center mb-8">
             Feature Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
               ? productList.slice(0, 20).map((productItem) => (
                   // eslint-disable-next-line react/jsx-key
@@ -281,28 +234,22 @@ function ShoppingHome() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:hidden">
             {brandList.map((brandItem, index) => (
-              <Card
+              <div
                 key={index}
-                isFooterBlurred
-                className="border-none"
-                radius="lg"
-                onClick={() => handleNavigateToListingPage(brandItem, "brand")}>
-                <img
-                  alt={brandItem.title}
-                  className="w-[200px] h-[200px]"
-                  src={brandItem.image}
-                />
-                <CardFooter className="justify-center border-1 overflow-hidden py-1 rounded-large items-center w-full mt-5">
-                  <Button
-                    className="text-tiny text-white bg-black"
-                    color="default"
-                    radius="lg"
-                    size="lg"
-                    variant="flat">
-                    {brandItem.title}
-                  </Button>
-                </CardFooter>
-              </Card>
+                className="flex flex-col items-center cursor-pointer">
+                <div
+                  key={index}
+                  onClick={() =>
+                    handleNavigateToListingPage(brandItem, "brand")
+                  }
+                  className="hover:shadow-lg flex flex-col items-center w-24 h-24 rounded-full bg-cover bg-center mb-2"
+                  style={{
+                    backgroundImage: `url(${brandItem.image})`,
+                  }}></div>
+                <span className="font-medium text-center">
+                  {brandItem.title}
+                </span>
+              </div>
             ))}
           </div>
         </div>
