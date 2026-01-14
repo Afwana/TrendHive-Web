@@ -59,36 +59,29 @@ function ShoppingListing() {
 
   function handleFilter(getSectionId, getCurrentOption) {
     setFilters((prevFilters) => {
-      // Create a copy of previous filters
       const newFilters = { ...prevFilters };
 
-      // Initialize the section if it doesn't exist
       if (!newFilters[getSectionId]) {
         newFilters[getSectionId] = [];
       }
 
-      // Check if the option already exists in the section
       const optionIndex = newFilters[getSectionId].indexOf(getCurrentOption);
 
       if (optionIndex === -1) {
-        // Add the option if it's not already present
         newFilters[getSectionId] = [
           ...newFilters[getSectionId],
           getCurrentOption,
         ];
       } else {
-        // Remove the option if it's already present
         newFilters[getSectionId] = newFilters[getSectionId].filter(
           (item, index) => index !== optionIndex
         );
 
-        // Remove the section if it's empty
         if (newFilters[getSectionId].length === 0) {
           delete newFilters[getSectionId];
         }
       }
 
-      // Save to session storage
       sessionStorage.setItem("filters", JSON.stringify(newFilters));
       return newFilters;
     });
@@ -161,12 +154,9 @@ function ShoppingListing() {
   useEffect(() => {
     setSort("price-lowtohigh");
 
-    // Check if we have a category in URL
     if (categoryId) {
-      // Don't load saved filters if we have a category filter
       setFilters({});
     } else {
-      // Load saved filters if no category filter
       setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
     }
   }, [categoryId]);
@@ -174,14 +164,12 @@ function ShoppingListing() {
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
       const createQueryString = createSearchParamsHelper(filters);
-      // Preserve category parameter if it exists
       const newParams = new URLSearchParams(createQueryString);
       if (categoryId) {
         newParams.set("category", categoryId);
       }
       setSearchParams(newParams, { replace: false });
     } else if (categoryId) {
-      // If only category filter exists
       setSearchParams(new URLSearchParams({ category: categoryId }), {
         replace: false,
       });
@@ -190,12 +178,11 @@ function ShoppingListing() {
 
   useEffect(() => {
     if (filters !== null && sort !== null) {
-      // Include categoryId in the fetch if needed
       dispatch(
         fetchAllFilteredProducts({
           filterParams: filters,
           sortParams: sort,
-          categoryId: categoryId, // Pass categoryId to your API if needed
+          categoryId: categoryId,
         })
       );
     }
@@ -295,9 +282,9 @@ function ShoppingListing() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {productList && productList.length > 0 ? (
-            productList.map((productItem) => (
-              // eslint-disable-next-line react/jsx-key
+            productList.map((productItem, index) => (
               <ShoppingProductTile
+                key={index}
                 handleGetProductDetails={handleGetProductDetails}
                 product={productItem}
                 handleAddtoCart={handleAddtoCart}
