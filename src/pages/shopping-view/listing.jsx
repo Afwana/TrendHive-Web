@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import AuthModal from "./../../components/auth/authModal";
+import { fetchAllCategories } from "@/store/shop/category-slice";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -42,6 +43,7 @@ function ShoppingListing() {
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { categories } = useSelector((state) => state.shopCategory);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
@@ -50,8 +52,7 @@ function ShoppingListing() {
   const [openFilterSheet, setOpenFilterSheet] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
 
-  const categorySearchParam = searchParams.get("category");
-
+  const categoryId = searchParams.get("category");
   function handleSort(value) {
     setSort(value);
   }
@@ -142,25 +143,63 @@ function ShoppingListing() {
   }
 
   useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (categoryId && categories && categories.length > 0) {
+      const category = categories.find((cat) => cat._id === categoryId);
+      if (category) {
+        setFilters((prev) => ({
+          ...prev,
+          category: [category._id],
+        }));
+      }
+    }
+  }, [categoryId, categories]);
+
+  useEffect(() => {
     setSort("price-lowtohigh");
-    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, [categorySearchParam]);
+
+    // Check if we have a category in URL
+    if (categoryId) {
+      // Don't load saved filters if we have a category filter
+      setFilters({});
+    } else {
+      // Load saved filters if no category filter
+      setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+    }
+  }, [categoryId]);
 
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
       const createQueryString = createSearchParamsHelper(filters);
-      setSearchParams(new URLSearchParams(createQueryString), {
+      // Preserve category parameter if it exists
+      const newParams = new URLSearchParams(createQueryString);
+      if (categoryId) {
+        newParams.set("category", categoryId);
+      }
+      setSearchParams(newParams, { replace: false });
+    } else if (categoryId) {
+      // If only category filter exists
+      setSearchParams(new URLSearchParams({ category: categoryId }), {
         replace: false,
       });
     }
-  }, [filters, setSearchParams]);
+  }, [filters, setSearchParams, categoryId]);
 
   useEffect(() => {
-    if (filters !== null && sort !== null)
+    if (filters !== null && sort !== null) {
+      // Include categoryId in the fetch if needed
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({
+          filterParams: filters,
+          sortParams: sort,
+          categoryId: categoryId, // Pass categoryId to your API if needed
+        })
       );
-  }, [dispatch, sort, filters]);
+    }
+  }, [dispatch, sort, filters, categoryId]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
@@ -169,7 +208,11 @@ function ShoppingListing() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <div className="hidden md:block">
-        <ProductFilter filters={filters} handleFilter={handleFilter} />
+        <ProductFilter
+          filters={filters}
+          handleFilter={handleFilter}
+          currentCategory={categoryId}
+        />
       </div>
       <div className="grid grid-cols-2 md:hidden gap-3">
         <Sheet
@@ -189,7 +232,11 @@ function ShoppingListing() {
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <ProductFilter filters={filters} handleFilter={handleFilter} />
+            <ProductFilter
+              filters={filters}
+              handleFilter={handleFilter}
+              currentCategory={categoryId}
+            />
           </SheetContent>
           {/* <ProductFilter filters={filters} handleFilter={handleFilter} /> */}
         </Sheet>
@@ -247,16 +294,20 @@ function ShoppingListing() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem) => (
-                // eslint-disable-next-line react/jsx-key
-                <ShoppingProductTile
-                  handleGetProductDetails={handleGetProductDetails}
-                  product={productItem}
-                  handleAddtoCart={handleAddtoCart}
-                />
-              ))
-            : null}
+          {productList && productList.length > 0 ? (
+            productList.map((productItem) => (
+              // eslint-disable-next-line react/jsx-key
+              <ShoppingProductTile
+                handleGetProductDetails={handleGetProductDetails}
+                product={productItem}
+                handleAddtoCart={handleAddtoCart}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10">
+              <p className="text-muted-foreground">No products found</p>
+            </div>
+          )}
         </div>
       </div>
       <ProductDetailsDialog

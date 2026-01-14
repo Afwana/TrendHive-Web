@@ -9,7 +9,7 @@ import { fetchAllCategories } from "@/store/admin/category-slice";
 import { fetchAllBrands } from "@/store/admin/brand-slice";
 import { useState } from "react";
 
-function ProductFilter({ filters, handleFilter }) {
+function ProductFilter({ filters, handleFilter, currentCategory }) {
   const { categoryList } = useSelector((state) => state.shopCategory);
   const { brandList } = useSelector((state) => state.shopBrand);
   const [expandedSections, setExpandedSections] = useState({});
@@ -21,13 +21,35 @@ function ProductFilter({ filters, handleFilter }) {
     dispatch(fetchAllBrands());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (currentCategory && categoryList && categoryList.length > 0) {
+      const foundCategory = categoryList.find(
+        (cat) => cat._id === currentCategory._id || cat._id === currentCategory
+      );
+
+      if (
+        foundCategory &&
+        (!filters?.category || !filters.category.includes(foundCategory._id))
+      ) {
+        setTimeout(() => {
+          handleFilter("category", foundCategory._id);
+        }, 100);
+      }
+    }
+  }, [currentCategory]);
+
   const filterOptions = {
     category: categoryList.map((categoryItem) => ({
-      id: categoryItem.title.toLowerCase(),
+      id: categoryItem._id,
       label: categoryItem.title,
+      isSelected:
+        currentCategory &&
+        (categoryItem._id === currentCategory._id ||
+          categoryItem._id === currentCategory ||
+          (currentCategory._id && categoryItem._id === currentCategory._id)),
     })),
     brand: brandList.map((brandItem) => ({
-      id: brandItem.title.toLowerCase(),
+      id: brandItem._id,
       label: brandItem.title,
     })),
     colours: [
@@ -114,7 +136,9 @@ function ProductFilter({ filters, handleFilter }) {
             .map((option, index) => (
               <Label
                 key={index}
-                className="flex font-medium items-center gap-2">
+                className={`flex font-medium items-center gap-2 ${
+                  option.isSelected ? "text-primary font-bold" : ""
+                }`}>
                 <Checkbox
                   checked={filters && filters[keyItem]?.includes(option.id)}
                   onCheckedChange={() => handleFilter(keyItem, option.id)}
