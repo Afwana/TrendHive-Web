@@ -25,7 +25,7 @@ import { fetchAllCategories } from "@/store/shop/category-slice";
 function ShoppingHome() {
   // const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
+    (state) => state.shopProducts,
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
   const { categoryList } = useSelector((state) => state.shopCategory);
@@ -43,13 +43,16 @@ function ShoppingHome() {
   const navigate = useNavigate();
 
   function handleNavigateToListingPage(getCurrentItem, section) {
-    const filteredItem = getCurrentItem?.title?.toLowerCase();
     sessionStorage.removeItem("filters");
-    const currentFilter = {
-      [section]: [filteredItem],
-    };
 
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    if (getCurrentItem && section) {
+      const filteredItem =
+        getCurrentItem._id || getCurrentItem?.title?.toLowerCase();
+      const currentFilter = {
+        [section]: [filteredItem],
+      };
+      sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    }
     navigate(`/shop/listing`);
   }
 
@@ -73,13 +76,13 @@ function ShoppingHome() {
 
       if (getCartItems.length) {
         const indexOfCurrentItem = getCartItems.findIndex(
-          (item) => item.productId === getCurrentProductId
+          (item) => item.productId === getCurrentProductId,
         );
         if (indexOfCurrentItem > -1) {
           const getQuantity = getCartItems[indexOfCurrentItem].quantity;
           if (getQuantity + 1 > getTotalStock) {
             toast.warning(
-              `Only ${getQuantity} quantity can be added for this item`
+              `Only ${getQuantity} quantity can be added for this item`,
             );
 
             return;
@@ -93,7 +96,7 @@ function ShoppingHome() {
           productId: getCurrentProductId,
           quantity: 1,
           size: sizeSelected,
-        })
+        }),
       ).then((data) => {
         if (data?.payload?.success) {
           dispatch(fetchCartItems(user?.id));
@@ -122,7 +125,7 @@ function ShoppingHome() {
       fetchAllFilteredProducts({
         filterParams: {},
         sortParams: "price-lowtohigh",
-      })
+      }),
     );
   }, [dispatch]);
 
@@ -137,11 +140,12 @@ function ShoppingHome() {
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-8 gap-4 ml-20">
         <div className="flex flex-col items-center cursor-pointer">
           <div
-            onClick={() => handleNavigateToListingPage(brandItem, "category")}
+            onClick={() => handleNavigateToListingPage(brandItem, "brand")}
             className="hover:shadow-lg flex flex-col items-center w-28 h-28 rounded-full bg-cover bg-center mb-2 border-2 border-gray-300"
             style={{
               backgroundImage: `url(${brandItem.image})`,
-            }}></div>
+            }}
+          ></div>
           <span className="font-medium text-center">{brandItem.title}</span>
         </div>
       </div>
@@ -158,7 +162,8 @@ function ShoppingHome() {
               opts={{
                 loop: true,
               }}
-              className="w-full">
+              className="w-full"
+            >
               <CarouselContent>
                 {featureImageList.map((slide, index) => (
                   <CarouselItem key={index}>
@@ -183,15 +188,26 @@ function ShoppingHome() {
         </div>
       </div>
       <section className="bg-gray-50">
-        <div className="flex items-center justify-center w-full gap-4 pt-12 px-5">
+        <div className="flex items-center justify-center w-full gap-4 py-12 px-5">
+          <div
+            className="flex items-center justify-center px-3 py-1 border border-primary rounded-full w-40 cursor-pointer"
+            onClick={() => {
+              sessionStorage.removeItem("filters");
+              navigate(`/shop/listing`);
+            }}
+          >
+            <p className="text-2xl font-bold text-primary">All</p>
+          </div>
           {categoryList &&
             categoryList.map((category) => (
               <div
                 key={category._id}
                 className="flex items-center justify-center px-3 py-1 border border-primary rounded-full w-40 cursor-pointer"
-                onClick={() =>
-                  navigate(`/shop/listing?category=${category._id}`)
-                }>
+                onClick={() => {
+                  sessionStorage.removeItem("filters");
+                  navigate(`/shop/listing?category=${category._id}`);
+                }}
+              >
                 <p className="text-2xl font-bold text-primary">
                   {category.title}
                 </p>
@@ -236,7 +252,8 @@ function ShoppingHome() {
             {brandList.map((brandItem, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center cursor-pointer">
+                className="flex flex-col items-center cursor-pointer"
+              >
                 <div
                   key={index}
                   onClick={() =>
@@ -245,7 +262,8 @@ function ShoppingHome() {
                   className="hover:shadow-lg flex flex-col items-center w-24 h-24 rounded-full bg-cover bg-center mb-2"
                   style={{
                     backgroundImage: `url(${brandItem.image})`,
-                  }}></div>
+                  }}
+                ></div>
                 <span className="font-medium text-center">
                   {brandItem.title}
                 </span>

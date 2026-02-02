@@ -8,8 +8,14 @@ import { useEffect } from "react";
 import { fetchAllCategories } from "@/store/admin/category-slice";
 import { fetchAllBrands } from "@/store/admin/brand-slice";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
-function ProductFilter({ filters, handleFilter, currentCategory }) {
+function ProductFilter({
+  filters,
+  handleFilter,
+  currentCategory,
+  clearFilter,
+}) {
   const { categoryList } = useSelector((state) => state.shopCategory);
   const { brandList } = useSelector((state) => state.shopBrand);
   const [expandedSections, setExpandedSections] = useState({});
@@ -24,7 +30,7 @@ function ProductFilter({ filters, handleFilter, currentCategory }) {
   useEffect(() => {
     if (currentCategory && categoryList && categoryList.length > 0) {
       const foundCategory = categoryList.find(
-        (cat) => cat._id === currentCategory._id || cat._id === currentCategory
+        (cat) => cat._id === currentCategory._id || cat._id === currentCategory,
       );
 
       if (
@@ -130,7 +136,8 @@ function ProductFilter({ filters, handleFilter, currentCategory }) {
         <div
           className={`grid ${
             isGrid ? "grid-cols-2" : "grid-cols-1"
-          } gap-2 mt-2`}>
+          } gap-2 mt-2`}
+        >
           {options
             .slice(0, expandedSections[keyItem] ? options.length : 10)
             .map((option, index) => (
@@ -138,7 +145,8 @@ function ProductFilter({ filters, handleFilter, currentCategory }) {
                 key={index}
                 className={`flex font-medium items-center gap-2 ${
                   option.isSelected ? "text-primary font-bold" : ""
-                }`}>
+                }`}
+              >
                 <Checkbox
                   checked={filters && filters[keyItem]?.includes(option.id)}
                   onCheckedChange={() => handleFilter(keyItem, option.id)}
@@ -150,7 +158,8 @@ function ProductFilter({ filters, handleFilter, currentCategory }) {
         {options.length > 10 && (
           <p
             onClick={() => toggleSection(keyItem)}
-            className="flex text-blue-500 underline cursor-pointer justify-end text-xs mt-1">
+            className="flex text-blue-500 underline cursor-pointer justify-end text-xs mt-1"
+          >
             {expandedSections[keyItem] ? "Show less" : "Show more"}
           </p>
         )}
@@ -170,6 +179,9 @@ function ProductFilter({ filters, handleFilter, currentCategory }) {
         {renderFilterOptions("colours", filterOptions.colours, true)}
         {renderFilterOptions("size", filterOptions.size, true)}
       </div>
+      <Button variant="outline" onClick={clearFilter} className="w-full mt-4">
+        Clear All Filters
+      </Button>
     </div>
   );
 }

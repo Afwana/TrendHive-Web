@@ -10,16 +10,15 @@ import UnauthPage from "./pages/unauth-page";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { checkAuth } from "./store/auth-slice";
-// import { Skeleton } from "@/components/ui/skeleton";
 import SearchProducts from "./pages/shopping-view/search";
 import AuthModal from "@/components/auth/authModal";
+import { Spinner } from "./components/ui/spinner";
+import { Button } from "./components/ui/button";
 
 function App() {
-  const {
-    user,
-    isAuthenticated,
-    // isLoading
-  } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth,
+  );
   const dispatch = useDispatch();
   const location = useLocation();
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -34,14 +33,21 @@ function App() {
     }
   }, [location]);
 
-  // if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-screen w-full mx-auto">
+        <Button disabled size="sm">
+          <Spinner data-icon="inline-start" />
+          Loading...
+        </Button>
+      </div>
+    );
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <AuthModal
         open={authModalOpen}
         setOpen={setAuthModalOpen}
-        // You might want to pass the original path for redirect after login
         redirectPath={location.state?.from || "/shop/home"}
       />
 
