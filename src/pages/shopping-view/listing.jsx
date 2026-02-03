@@ -23,6 +23,7 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import AuthModal from "./../../components/auth/authModal";
 import { fetchAllCategories } from "@/store/shop/category-slice";
+import { Spinner } from "@/components/ui/spinner";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -38,7 +39,7 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
+  const { productList, productDetails, isLoading } = useSelector(
     (state) => state.shopProducts,
   );
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -50,12 +51,15 @@ function ShoppingListing() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openFilterSheet, setOpenFilterSheet] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [filtersInitialized, setFilterInitialized] = useState(false);
 
   const categoryId = searchParams.get("category");
 
   function handleClearAllFilters() {
     setFilters({});
+    setSort("price-lowtohigh");
     sessionStorage.removeItem("filters");
+    setSearchParams({}, { replace: true });
   }
 
   function handleSort(value) {
@@ -150,28 +154,6 @@ function ShoppingListing() {
     dispatch(fetchAllCategories());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (categoryId && categories && categories.length > 0) {
-  //     const category = categories.find((cat) => cat._id === categoryId);
-  //     if (category) {
-  //       setFilters((prev) => ({
-  //         ...prev,
-  //         category: [category._id],
-  //       }));
-  //     }
-  //   }
-  // }, [categoryId, categories]);
-
-  // useEffect(() => {
-  //   setSort("price-lowtohigh");
-
-  //   if (categoryId) {
-  //     setFilters({});
-  //   } else {
-  //     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  //   }
-  // }, [categoryId]);
-
   useEffect(() => {
     if (categoryId && categories && categories.length > 0) {
       setFilters({ category: [categoryId] });
@@ -185,7 +167,8 @@ function ShoppingListing() {
       }
     }
     setSort("price-lowtohigh");
-  }, [categoryId, categories]);
+    setFilterInitialized(true);
+  }, []);
 
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
@@ -195,32 +178,36 @@ function ShoppingListing() {
         newParams.set("category", categoryId);
       }
       setSearchParams(newParams, { replace: true });
-    }
-    // else if (categoryId) {
-    //   setSearchParams(new URLSearchParams({ category: categoryId }), {
-    //     replace: false,
-    //   });
-    // }
-    else {
+    } else {
       setSearchParams({}, { replace: true });
     }
   }, [filters, setSearchParams, categoryId]);
 
   useEffect(() => {
-    if (filters !== null && sort !== null) {
-      dispatch(
-        fetchAllFilteredProducts({
-          filterParams: filters,
-          sortParams: sort,
-          categoryId: categoryId,
-        }),
-      );
-    }
-  }, [dispatch, sort, filters, categoryId]);
+    if (!filtersInitialized) return;
+
+    dispatch(
+      fetchAllFilteredProducts({
+        filterParams: filters,
+        sortParams: sort,
+        categoryId,
+      }),
+    );
+  }, [dispatch, sort, filters, categoryId, filtersInitialized]);
 
   useEffect(() => {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-screen w-full mx-auto">
+        <Button disabled size="sm">
+          <Spinner data-icon="inline-start" />
+          Loading...
+        </Button>
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
