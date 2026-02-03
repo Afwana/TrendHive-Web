@@ -47,6 +47,7 @@ function AuthModal({ open, setOpen, redirectPath }) {
     useState(registerInitialState);
   const [forgetFormData, setForgetFormData] = useState(forgetInitialState);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -97,42 +98,71 @@ function AuthModal({ open, setOpen, redirectPath }) {
       isValid = validateForm(loginFormData);
     }
 
-    if (!isValid) return;
-    {
-      forgetPassword
-        ? dispatch(resetPassword(forgetFormData)).then((data) => {
-            if (data?.payload?.success) {
-              toast.success(data?.payload?.message);
-              setForgetPassword(false);
-            } else {
-              toast.error(data?.payload?.message);
-            }
-          })
-        : register
-        ? dispatch(registerUser(registerFormData)).then((data) => {
-            if (data?.payload?.success) {
-              toast.success(data?.payload?.message);
-              setRegister(false);
-              navigate(redirectPath);
-            } else {
-              toast.error(data?.payload?.message);
-            }
-          })
-        : dispatch(loginUser(loginFormData)).then((data) => {
-            if (data?.payload?.success) {
-              toast.success(data?.payload?.message);
-              handleDialogClose();
-              navigate(redirectPath);
-            } else {
-              toast.error(data?.payload?.message);
-            }
+    if (!isValid) {
+      setIsSubmitting(false);
+      return;
+    }
+    if (forgetPassword) {
+      dispatch(resetPassword(forgetFormData)).then((data) => {
+        setIsSubmitting(false);
+        if (data?.payload?.success) {
+          toast.success(data?.payload?.message);
+          setForgetPassword(false);
+          setForgetFormData(forgetInitialState);
+          setLoginFormData({
+            ...loginInitialState,
+            phoneNumber: forgetFormData.phoneNumber,
           });
+        } else {
+          toast.error(data?.payload?.message);
+        }
+      });
+    } else if (register) {
+      dispatch(registerUser(registerFormData)).then((data) => {
+        setIsSubmitting(false);
+        if (data?.payload?.success) {
+          toast.success(data?.payload?.message);
+          setRegister(false);
+          setLoginFormData({
+            ...loginInitialState,
+            phoneNumber: registerFormData.phoneNumber,
+          });
+          setRegisterFormData(registerInitialState);
+          setErrors({});
+          setTimeout(() => {
+            const passwordInput = document.querySelector(
+              'input[name="password"]',
+            );
+            if (passwordInput) passwordInput.focus();
+          }, 100);
+        } else {
+          toast.error(data?.payload?.message);
+        }
+      });
+    } else {
+      dispatch(loginUser(loginFormData)).then((data) => {
+        setIsSubmitting(false);
+        if (data?.payload?.success) {
+          toast.success(data?.payload?.message);
+          setLoginFormData(loginInitialState);
+          handleDialogClose();
+          navigate(redirectPath);
+        } else {
+          toast.error(data?.payload?.message);
+        }
+      });
     }
   }
 
   function handleDialogClose() {
     setOpen(false);
     setErrors({});
+    setRegister(false);
+    setForgetPassword(false);
+    setLoginFormData(loginInitialState);
+    setRegisterFormData(registerInitialState);
+    setForgetFormData(forgetInitialState);
+    setIsSubmitting(false);
   }
 
   const handleFormDataChange = (formData, setFormData, field) => (e) => {
@@ -142,12 +172,40 @@ function AuthModal({ open, setOpen, redirectPath }) {
     } else {
       setFormData({ ...formData, [field]: e.target.value });
     }
+
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: "" });
+    }
+  };
+
+  const handleSwitchToLogin = () => {
+    setRegister(false);
+    setForgetPassword(false);
+    setErrors({});
+  };
+
+  const handleSwitchToRegister = () => {
+    setRegister(true);
+    setForgetPassword(false);
+    setErrors({});
+  };
+
+  const handleSwitchToForgetPassword = () => {
+    setForgetPassword(true);
+    setRegister(false);
+    setErrors({});
+    if (loginFormData.phoneNumber) {
+      setForgetFormData({
+        ...forgetInitialState,
+        phoneNumber: loginFormData.phoneNumber,
+      });
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-[90vw] sm:max-w-[80vw] lg:max-w-[60vw] min-[2560px]:max-w-[50vw] overflow-hidden h-[550px] min-[2560px]:h-[700px]">
-        <div className="grid grid-cols-2 gap-5 w-full h-full overflow-hidden">
+      <DialogContent className="max-w-[90vw] sm:max-w-[80vw] lg:max-w-[60vw] min-[2560px]:max-w-[50vw] overflow-x-hidden h-[550px] min-[2560px]:h-[700px]">
+        <div className="grid grid-cols-2 gap-5 w-full h-full overflow-x-hidden">
           <div className="hidden lg:flex items-center justify-center bg-black w-full">
             <img src={layoutImage} alt="auth-image" className="w-full h-full" />
           </div>
@@ -162,21 +220,23 @@ function AuthModal({ open, setOpen, redirectPath }) {
                 onSubmit={onSubmit}
                 errors={errors}
                 handleChange={handleFormDataChange}
+                isSubmitting={isSubmitting}
               />
             ) : (
               <div className="flex flex-col gap-2">
                 <div className="mx-auto w-full max-w-md">
                   <div className="text-center mb-5">
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                      Sign in to your account
+                      {register ? "Create Account" : "Sign in to your account"}
                     </h1>
                     {register ? (
                       <p className="mt-2 flex items-center justify-center cursor-pointer">
                         Already have an account
                         <div
                           className="font-medium ml-2 text-primary underline"
-                          onClick={() => setRegister(false)}>
-                          Login
+                          onClick={handleSwitchToLogin}
+                        >
+                          Sign in
                         </div>
                       </p>
                     ) : (
@@ -184,8 +244,9 @@ function AuthModal({ open, setOpen, redirectPath }) {
                         Don&#39;t have an account
                         <div
                           className="font-medium ml-2 text-primary underline"
-                          onClick={() => setRegister(true)}>
-                          Register
+                          onClick={handleSwitchToRegister}
+                        >
+                          Sign up
                         </div>
                       </p>
                     )}
@@ -193,28 +254,33 @@ function AuthModal({ open, setOpen, redirectPath }) {
                   {register ? (
                     <CommonForm
                       formControls={registerFormControls}
-                      buttonText={"Sign Up"}
+                      buttonText={
+                        isSubmitting ? "Creating Account..." : "Sign Up"
+                      }
                       formData={registerFormData}
                       setFormData={setRegisterFormData}
                       onSubmit={onSubmit}
                       errors={errors}
                       handleChange={handleFormDataChange}
+                      isBtnDisabled={isSubmitting}
                     />
                   ) : (
                     <CommonForm
                       formControls={loginFormControls}
-                      buttonText={"Sign In"}
+                      buttonText={isSubmitting ? "Signing In..." : "Sign In"}
                       formData={loginFormData}
                       setFormData={setLoginFormData}
                       onSubmit={onSubmit}
                       errors={errors}
                       handleChange={handleFormDataChange}
+                      isBtnDisabled={isSubmitting}
                     />
                   )}
                 </div>
                 <p
                   className="text-sm text-center font-semibold hover:underline"
-                  onClick={() => setForgetPassword(true)}>
+                  onClick={handleSwitchToForgetPassword}
+                >
                   Forget password?!
                 </p>
               </div>

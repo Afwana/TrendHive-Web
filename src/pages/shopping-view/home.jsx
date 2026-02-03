@@ -23,7 +23,6 @@ import {
 import { fetchAllCategories } from "@/store/shop/category-slice";
 
 function ShoppingHome() {
-  // const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts,
   );
@@ -35,7 +34,6 @@ function ShoppingHome() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [api, setApi] = useState();
-  // const [current, setCurrent] = useState(0);
 
   const { user } = useSelector((state) => state.auth);
 
@@ -115,7 +113,7 @@ function ShoppingHome() {
 
     const interval = setInterval(() => {
       api.scrollNext();
-    }, 5000); // 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [api]);
@@ -223,14 +221,16 @@ function ShoppingHome() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList && productList.length > 0
-              ? productList.slice(0, 20).map((productItem) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <ShoppingProductTile
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                  />
-                ))
+              ? productList
+                  .slice(0, 20)
+                  .map((productItem) => (
+                    <ShoppingProductTile
+                      key={productItem._id}
+                      handleGetProductDetails={handleGetProductDetails}
+                      product={productItem}
+                      handleAddtoCart={handleAddtoCart}
+                    />
+                  ))
               : null}
           </div>
         </div>

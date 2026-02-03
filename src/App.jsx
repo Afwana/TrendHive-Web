@@ -48,7 +48,7 @@ function App() {
       <AuthModal
         open={authModalOpen}
         setOpen={setAuthModalOpen}
-        redirectPath={location.state?.from || "/shop/home"}
+        // redirectPath={location.state?.from || "/shop/home"}
       />
 
       <Routes>

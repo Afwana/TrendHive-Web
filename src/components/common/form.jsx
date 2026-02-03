@@ -62,9 +62,11 @@ function CommonForm({
                   [getControlItem.name]: value,
                 })
               }
-              value={value}>
+              value={value}
+            >
               <SelectTrigger
-                className={`w-full ${error ? "border-red-500" : ""}`}>
+                className={`w-full ${error ? "border-red-500" : ""}`}
+              >
                 <SelectValue placeholder={getControlItem.label} />
               </SelectTrigger>
               <SelectContent>
