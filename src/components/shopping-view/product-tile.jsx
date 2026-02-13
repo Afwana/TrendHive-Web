@@ -14,16 +14,19 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
+import { useNavigate } from "react-router-dom";
 
 function ShoppingProductTile({
   product,
-  handleGetProductDetails,
+  // handleGetProductDetails,
   handleAddtoCart,
 }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
   const [enquirySize, setEnquirySize] = useState("");
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleEnquiry = (product, size) => {
     const message = `Hello, I am interested in the following product\n\n${
@@ -36,7 +39,7 @@ function ShoppingProductTile({
 
     const phoneNumber = "916238933760";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      message
+      message,
     )}`;
 
     window.open(whatsappURL, "_blank");
@@ -63,7 +66,7 @@ function ShoppingProductTile({
   };
   return (
     <Card className="w-full max-w-sm mx-auto">
-      <div onClick={() => handleGetProductDetails(product?._id)}>
+      <div onClick={() => navigate(`/shop/products/${product?._id}`)}>
         <div className="relative">
           <img
             src={product?.thumbnail}
@@ -98,7 +101,8 @@ function ShoppingProductTile({
             <span
               className={`${
                 product?.salePrice > 0 ? "line-through" : ""
-              } text-lg font-semibold text-primary`}>
+              } text-lg font-semibold text-primary`}
+            >
               &#8377; {product?.price}
             </span>
             {product?.salePrice > 0 ? (
@@ -130,7 +134,8 @@ function ShoppingProductTile({
             <Button
               onClick={handleSizeForEnquiry}
               disabled={!enquirySize}
-              className="w-full mt-4">
+              className="w-full mt-4"
+            >
               Add Size
             </Button>
           </DialogContent>
@@ -161,7 +166,8 @@ function ShoppingProductTile({
               <Button
                 onClick={handleProductSize}
                 disabled={!selectedSize}
-                className="w-full mt-4">
+                className="w-full mt-4"
+              >
                 Add Size
               </Button>
             </DialogContent>

@@ -14,6 +14,7 @@ import SearchProducts from "./pages/shopping-view/search";
 import AuthModal from "@/components/auth/authModal";
 import { Spinner } from "./components/ui/spinner";
 import { Button } from "./components/ui/button";
+import ShoppingProductsDetails from "./pages/shopping-view/product-details";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -70,6 +71,7 @@ function App() {
         <Route path="/shop" element={<ShoppingLayout />}>
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="products/:id" element={<ShoppingProductsDetails />} />
           <Route path="search" element={<SearchProducts />} />
 
           <Route

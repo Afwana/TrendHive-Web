@@ -4,6 +4,7 @@ import axios from "axios";
 const initialState = {
   isLoading: false,
   categoryList: [],
+  subCategoryList: [],
 };
 
 export const addNewCategory = createAsyncThunk(
@@ -16,21 +17,21 @@ export const addNewCategory = createAsyncThunk(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     return result?.data;
-  }
+  },
 );
 
 export const fetchAllCategories = createAsyncThunk(
   "/category/fetchAllCategories",
   async () => {
     const result = await axios.get(
-      "https://trendhive-server.onrender.com/api/admin/category/get"
+      "https://trendhive-server.onrender.com/api/admin/category/get",
     );
 
     return result?.data;
-  }
+  },
 );
 
 export const editCategory = createAsyncThunk(
@@ -43,22 +44,33 @@ export const editCategory = createAsyncThunk(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     return result?.data;
-  }
+  },
 );
 
 export const deleteCategory = createAsyncThunk(
   "/category/deleteCategory",
   async (id) => {
     const result = await axios.delete(
-      `https://trendhive-server.onrender.com/api/admin/category/delete/${id}`
+      `https://trendhive-server.onrender.com/api/admin/category/delete/${id}`,
     );
 
     return result?.data;
-  }
+  },
+);
+
+export const fetchSubCategoriesOfCategory = createAsyncThunk(
+  "/category/subCategoriesOfCategory",
+  async (categoryId) => {
+    const result = await axios.get(
+      `https://trendhive-server.onrender.com/api/admin/category/${categoryId}/subCategories`,
+    );
+
+    return result?.data;
+  },
 );
 
 const AdminCategorySilce = createSlice({
@@ -77,6 +89,17 @@ const AdminCategorySilce = createSlice({
       .addCase(fetchAllCategories.rejected, (state) => {
         state.isLoading = false;
         state.categoryList = [];
+      })
+      .addCase(fetchSubCategoriesOfCategory.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchSubCategoriesOfCategory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.subCategoryList = action.payload.data || [];
+      })
+      .addCase(fetchSubCategoriesOfCategory.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
       });
   },
 });
