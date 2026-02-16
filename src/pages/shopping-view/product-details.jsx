@@ -1,12 +1,7 @@
-// import { fetchAllBrands } from "@/store/admin/brand-slice";
-// import { fetchAllCategories } from "@/store/admin/category-slice";
-// import { Button, Chip, useDisclosure } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-// import { fetchSubCategoriesOfCategory } from "./../../store/admin/category-slice/index";
 import { Card, CardContent } from "@/components/ui/card";
-// import AddNewProduct from "@/components/admin-view/Products/AddNewProduct";
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
@@ -48,9 +43,6 @@ export default function ShoppingProductsDetails() {
   const { user } = useSelector((state) => state.auth);
   const { reviews } = useSelector((state) => state.shopReview);
 
-  //   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  //   const [editProductData, setEditProductData] = useState(null);
-  //   const [currentEditedId, setCurrentEditedId] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
   const [productCategory, setProductCategory] = useState(null);
   const [productBrand, setProductBrand] = useState(null);
@@ -283,7 +275,7 @@ export default function ShoppingProductsDetails() {
             {productDetails?.title}
           </h2>
           <div className="flex items-center justify-end gap-3">
-            <Button color="primary" size="lg" className="text-xl font-bold">
+            <Button size="lg" className="text-xl font-bold">
               {productDetails?.totalStock}
             </Button>
             <Dialog
@@ -380,11 +372,19 @@ export default function ShoppingProductsDetails() {
           <div className="flex flex-col gap-5">
             {/* price details */}
             <div className="flex items-center justify-between gap-5">
-              <Button color="danger" size="lg" className="w-full">
+              <Button
+                color="danger"
+                size="lg"
+                className="w-full bg-red-500 hover:bg-red-600"
+              >
                 &#8377;
                 <span className="line-through">{`${productDetails?.price}`}</span>
               </Button>
-              <Button color="success" size="lg" className="w-full">
+              <Button
+                color="success"
+                size="lg"
+                className="w-full bg-green-500 hover:bg-green-600"
+              >
                 &#8377;<span>{`${productDetails?.salePrice}`}</span>
               </Button>
             </div>
@@ -437,7 +437,7 @@ export default function ShoppingProductsDetails() {
                 )}
               </div>
               {/* Quality */}
-              <div className="flex items-center justify-center p-3 rounded-full bg-success text-xl border border-amber-300 font-bold w-14 h-14">
+              <div className="flex items-center justify-center p-3 rounded-full bg-amber-300 text-xl border-2 border-green-400 font-bold w-14 h-14">
                 {productDetails?.quality}
               </div>
             </div>

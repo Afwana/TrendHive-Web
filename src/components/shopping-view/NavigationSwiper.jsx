@@ -85,15 +85,7 @@ export default function NavigationSwiper({
         {images?.map((item, index) => (
           <SwiperSlide key={index}>
             <div
-              className={`
-                cursor-pointer w-full transition-all duration-200 ease-in-out shadow-lg
-                md:h-[100px] lg:h-[150px]
-                ${
-                  selectedImage === item
-                    ? "scale-105 shadow-lg z-10"
-                    : "hover:scale-102"
-                }
-              `}
+              className="cursor-pointer w-full transition-all duration-200 ease-in-out shadow-lg md:h-[100px] lg:h-[150px]"
               onClick={() => setSelectedImage(item)}
             >
               <img
