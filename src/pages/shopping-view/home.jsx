@@ -7,7 +7,7 @@ import {
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
+// import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import { toast } from "sonner";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
@@ -23,15 +23,13 @@ import {
 import { fetchAllCategories } from "@/store/shop/category-slice";
 
 function ShoppingHome() {
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts,
-  );
+  const { productList } = useSelector((state) => state.shopProducts);
   const { featureImageList } = useSelector((state) => state.commonFeature);
   const { categoryList } = useSelector((state) => state.shopCategory);
   const { brandList } = useSelector((state) => state.shopBrand);
   const { cartItems } = useSelector((state) => state.shopCart);
 
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  // const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [api, setApi] = useState();
 
@@ -104,9 +102,9 @@ function ShoppingHome() {
     }
   }
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
+  // useEffect(() => {
+  //   if (productDetails !== null) setOpenDetailsDialog(true);
+  // }, [productDetails]);
 
   useEffect(() => {
     if (!api) return;
@@ -273,11 +271,11 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <ProductDetailsDialog
+      {/* <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
-      />
+      /> */}
 
       <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>

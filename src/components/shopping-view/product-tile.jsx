@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { MessageCircle, ShoppingBag } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -15,6 +15,8 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllCategories } from "@/store/shop/category-slice";
 
 function ShoppingProductTile({
   product,
@@ -25,17 +27,66 @@ function ShoppingProductTile({
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
   const [enquirySize, setEnquirySize] = useState("");
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+  const [productCategory, setProductCategory] = useState(null);
+  const [productBrand, setProductBrand] = useState(null);
+  const [subCategories, setSubCategories] = useState([]);
+
+  const { categoryList, subCategoryList } = useSelector(
+    (state) => state.adminCategory,
+  );
+  const { brandList } = useSelector((state) => state.adminBrand);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (product?.category && categoryList.length > 0) {
+      const foundCategory = categoryList.find(
+        (cat) => cat._id === product.category,
+      );
+      setProductCategory(foundCategory);
+    }
+  }, [product, categoryList]);
+
+  useEffect(() => {
+    if (product?.brand && brandList.length > 0) {
+      const foundBrand = brandList.find((brand) => brand._id === product.brand);
+      setProductBrand(foundBrand);
+    }
+  }, [product, brandList]);
+
+  const matchSubCategories = useCallback(() => {
+    if (product?.subCategories && subCategoryList.length > 0) {
+      const filteredSubCategories = subCategoryList.filter((subCat) => {
+        const isMatch = product.subCategories.some((subId) => {
+          const subIdStr = String(subId);
+          const subCatIdStr = String(subCat._id || subCat.id || "");
+          return subIdStr === subCatIdStr;
+        });
+        return isMatch;
+      });
+      setSubCategories(filteredSubCategories);
+    } else {
+      setSubCategories([]);
+    }
+  }, [product, subCategoryList]);
+
+  useEffect(() => {
+    matchSubCategories();
+  }, [matchSubCategories]);
 
   const handleEnquiry = (product, size) => {
     const message = `Hello, I am interested in the following product\n\n${
       product?.title
-    }\n*Category:* ${categoryOptionsMap[product?.category]}\n*Brand:* ${
-      brandOptionsMap[product?.brand]
+    }\n*Category:* ${productCategory?.title}\n*Sub Category:* ${subCategories?.map((itm) => itm.title).join(",")}\n*Brand:* ${
+      productBrand?.title
     }\n*Price:* ₹ ${
       product?.salePrice > 0 ? product?.salePrice : product?.price
-    }\n*Size:* ${size}\n${product?.thumbnail}\n\nIs it available?`;
+    }\n*Size:* ${size}\n\n${product?.thumbnail}\n\nIs it available?`;
 
     const phoneNumber = "916238933760";
     const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(

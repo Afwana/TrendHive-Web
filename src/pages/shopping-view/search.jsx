@@ -1,4 +1,4 @@
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
+// import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Input } from "@/components/ui/input";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
@@ -12,11 +12,11 @@ import AuthModal from "./../../components/auth/authModal";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  // const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
-  const { productDetails } = useSelector((state) => state.shopProducts);
+  // const { productDetails } = useSelector((state) => state.shopProducts);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const key = searchParams.get("keyword");
@@ -47,13 +47,13 @@ function SearchProducts() {
 
       if (getCartItems.length) {
         const indexOfCurrentItem = getCartItems.findIndex(
-          (item) => item.productId === getCurrentProductId
+          (item) => item.productId === getCurrentProductId,
         );
         if (indexOfCurrentItem > -1) {
           const getQuantity = getCartItems[indexOfCurrentItem].quantity;
           if (getQuantity + 1 > getTotalStock) {
             toast.warning(
-              `Only ${getQuantity} quantity can be added for this item`
+              `Only ${getQuantity} quantity can be added for this item`,
             );
 
             return;
@@ -67,7 +67,7 @@ function SearchProducts() {
           productId: getCurrentProductId,
           quantity: 1,
           size: sizeSelected,
-        })
+        }),
       ).then((data) => {
         if (data?.payload?.success) {
           dispatch(fetchCartItems(user?.id));
@@ -81,9 +81,9 @@ function SearchProducts() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
+  // useEffect(() => {
+  //   if (productDetails !== null) setOpenDetailsDialog(true);
+  // }, [productDetails]);
 
   return (
     <div className="container mx-auto md:px-6 px-4 py-8">
@@ -112,11 +112,11 @@ function SearchProducts() {
           </div>
         ))}
       </div>
-      <ProductDetailsDialog
+      {/* <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
-      />
+      /> */}
       <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );

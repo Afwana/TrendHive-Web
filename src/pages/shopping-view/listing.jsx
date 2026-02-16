@@ -1,5 +1,5 @@
 import ProductFilter from "@/components/shopping-view/filter";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
+// import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,16 +39,14 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails, isLoading } = useSelector(
-    (state) => state.shopProducts,
-  );
+  const { productList, isLoading } = useSelector((state) => state.shopProducts);
   const { cartItems } = useSelector((state) => state.shopCart);
   const { categories } = useSelector((state) => state.shopCategory);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState("price-lowtohigh");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  // const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openFilterSheet, setOpenFilterSheet] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [filtersInitialized, setFilterInitialized] = useState(false);
@@ -195,9 +193,9 @@ function ShoppingListing() {
     );
   }, [dispatch, sort, filters, categoryId, filtersInitialized]);
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
+  // useEffect(() => {
+  //   if (productDetails !== null) setOpenDetailsDialog(true);
+  // }, [productDetails]);
 
   if (isLoading)
     return (
@@ -321,11 +319,11 @@ function ShoppingListing() {
           )}
         </div>
       </div>
-      <ProductDetailsDialog
+      {/* <ProductDetailsDialog
         open={openDetailsDialog}
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
-      />
+      /> */}
       <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );

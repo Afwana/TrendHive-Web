@@ -16,11 +16,27 @@ import { fetchAllCategories } from "@/store/shop/category-slice";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
 import { fetchSubCategoriesOfCategory } from "@/store/admin/category-slice";
 import NavigationSwiper from "@/components/shopping-view/NavigationSwiper";
+import { MessageCircle, ShoppingBag } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import StarRatingComponent from "./../../components/common/star-rating";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { addReview, getReviews } from "@/store/shop/review-slice";
 
 export default function ShoppingProductsDetails() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
+
   const { productList, productDetails, isLoading } = useSelector(
     (state) => state.shopProducts,
   );
@@ -28,6 +44,9 @@ export default function ShoppingProductsDetails() {
     (state) => state.adminCategory,
   );
   const { brandList } = useSelector((state) => state.adminBrand);
+  const { cartItems } = useSelector((state) => state.shopCart);
+  const { user } = useSelector((state) => state.auth);
+  const { reviews } = useSelector((state) => state.shopReview);
 
   //   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   //   const [editProductData, setEditProductData] = useState(null);
@@ -38,6 +57,12 @@ export default function ShoppingProductsDetails() {
   const [sizeArray, setSizeArray] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewMsg, setReviewMsg] = useState("");
+  const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+  const [enquirySize, setEnquirySize] = useState("");
 
   useEffect(() => {
     dispatch(fetchProductDetails(id));
@@ -140,6 +165,114 @@ export default function ShoppingProductsDetails() {
     similarProducts();
   }, [similarProducts]);
 
+  function handleAddToCart(getCurrentProductId, getTotalStock, sizeSelected) {
+    let getCartItems = cartItems.items || [];
+
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId,
+      );
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast.warning(
+            `Only ${getQuantity} quantity can be added for this item`,
+          );
+
+          return;
+        }
+      }
+    }
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+        size: sizeSelected,
+      }),
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast.success("Product is added to cart");
+      }
+    });
+  }
+
+  const handleProductSize = () => {
+    if (!selectedSize) {
+      toast.warning("Please input a size.");
+      return;
+    }
+    handleAddToCart(
+      productDetails?._id,
+      productDetails?.totalStock,
+      selectedSize,
+    );
+    setIsSizeModalOpen(false);
+    setSelectedSize("");
+  };
+
+  const averageReview =
+    reviews && reviews.length > 0
+      ? reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
+        reviews.length
+      : 0;
+
+  function handleRatingChange(getRating) {
+    setRating(getRating);
+  }
+
+  function handleAddReview() {
+    dispatch(
+      addReview({
+        productId: productDetails?._id,
+        userId: user?.id,
+        userName: user?.userName,
+        reviewMessage: reviewMsg,
+        reviewValue: rating,
+      }),
+    )
+      .then((data) => {
+        if (data.payload.success) {
+          setRating(0);
+          setReviewMsg("");
+          dispatch(getReviews(productDetails?._id));
+          toast.success("Review added successfully!");
+        }
+      })
+      .catch((error) => {
+        toast.error("You need to purchase product to review it.");
+        console.log(error);
+      });
+  }
+
+  const handleEnquiry = (product, size) => {
+    const message = `Hello, I am interested in the following product\n\n${
+      product?.title
+    }\n*Category:* ${productCategory?.title}\n*Sub Category:* ${subCategories?.map((itm) => itm.title).join(",")}\n*Brand:* ${
+      productBrand?.title
+    }\n*Price:* ₹ ${
+      product?.salePrice > 0 ? product?.salePrice : product?.price
+    }\n*Size:* ${size}\n\n${product?.thumbnail}\n\nIs it available?`;
+
+    const phoneNumber = "916238933760";
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message,
+    )}`;
+
+    window.open(whatsappURL, "_blank");
+  };
+
+  const handleSizeForEnquiry = () => {
+    if (!enquirySize) {
+      toast.error("Please input a size");
+    }
+
+    handleEnquiry(productDetails, enquirySize);
+    setIsEnquiryModalOpen(false);
+    setEnquirySize("");
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -153,6 +286,76 @@ export default function ShoppingProductsDetails() {
             <Button color="primary" size="lg" className="text-xl font-bold">
               {productDetails?.totalStock}
             </Button>
+            <Dialog
+              open={isEnquiryModalOpen}
+              onOpenChange={setIsEnquiryModalOpen}
+            >
+              <DialogTrigger asChild>
+                <Button color="primary" size="lg" className="text-xl font-bold">
+                  <MessageCircle /> Enquiry
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Enter Size</DialogTitle>
+                </DialogHeader>
+                <div className="flex w-full">
+                  <Input
+                    value={enquirySize}
+                    onChange={(e) => setEnquirySize(e.target.value)}
+                    className="border-black border-2"
+                  />
+                </div>
+                <Button
+                  onClick={handleSizeForEnquiry}
+                  disabled={!enquirySize}
+                  className="w-full mt-4"
+                >
+                  Add Size
+                </Button>
+              </DialogContent>
+            </Dialog>
+            <div className="">
+              {productDetails?.totalStock === 0 ? (
+                <Button className="w-full opacity-60 cursor-not-allowed">
+                  Out of Stock
+                </Button>
+              ) : (
+                <Dialog
+                  open={isSizeModalOpen}
+                  onOpenChange={setIsSizeModalOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      color="primary"
+                      size="lg"
+                      className="text-xl font-bold"
+                    >
+                      <ShoppingBag /> Add to cart
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Enter Size</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex w-full">
+                      <Input
+                        value={selectedSize}
+                        onChange={(e) => setSelectedSize(e.target.value)}
+                        className="border-black border-2"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleProductSize}
+                      disabled={!selectedSize}
+                      className="w-full mt-4"
+                    >
+                      Add Size
+                    </Button>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -304,7 +507,72 @@ export default function ShoppingProductsDetails() {
           </div>
         </div>
       ) : null}
-      <div className="flex items-end bottom-0 justify-between mt-20">
+      <div className="flex p-8 flex-col gap-5">
+        <p className="text-xl font-semibold">Let&apos;s Review It!</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-5 w-full">
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-0.5">
+                <StarRatingComponent rating={averageReview} />
+              </div>
+              <span className="text-muted-foreground">
+                ({averageReview.toFixed(2)})
+              </span>
+            </div>
+            <div className="grid gap-6">
+              {reviews && reviews.length > 0 ? (
+                reviews.map((reviewItem, index) => (
+                  <div key={index} className="flex gap-4">
+                    <Avatar className="w-10 h-10 border">
+                      <AvatarFallback>
+                        {reviewItem?.userName[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold">{reviewItem?.userName}</h3>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <StarRatingComponent rating={reviewItem?.reviewValue} />
+                      </div>
+                      <p className="text-muted-foreground">
+                        {reviewItem.reviewMessage}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <h1>No Reviews</h1>
+              )}
+            </div>
+          </div>
+          <div className="flex-col flex gap-2">
+            <Label>Write a review</Label>
+            <div className="flex gap-1">
+              <StarRatingComponent
+                rating={rating}
+                handleRatingChange={handleRatingChange}
+              />
+            </div>
+            <div className="px-2">
+              <Input
+                name="reviewMsg"
+                value={reviewMsg}
+                onChange={(event) => setReviewMsg(event.target.value)}
+                className="w-full h-[150px]"
+                placeholder="Write a review..."
+              />
+            </div>
+            <Button
+              onClick={handleAddReview}
+              disabled={reviewMsg.trim() === ""}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-end bottom-0 justify-between mt-20 p-5">
         <p className="text-sm md:text-base font-medium">
           Updated At: {new Date(productDetails?.updatedAt).toLocaleString()}
         </p>
