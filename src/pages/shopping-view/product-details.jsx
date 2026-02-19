@@ -147,6 +147,8 @@ export default function ShoppingProductsDetails() {
         });
         return isMatch;
       });
+      console.log(filterProducts);
+
       setRelatedProducts(filterProducts);
     } else {
       setRelatedProducts([]);
