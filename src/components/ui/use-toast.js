@@ -1,4 +1,3 @@
-// Inspired by react-hot-toast library
 import * as React from "react";
 
 const TOAST_LIMIT = 1;
@@ -49,7 +48,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t
+          t.id === action.toast.id ? { ...t, ...action.toast } : t,
         ),
       };
 
@@ -74,7 +73,7 @@ export const reducer = (state, action) => {
                 ...t,
                 open: false,
               }
-            : t
+            : t,
         ),
       };
     }

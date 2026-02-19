@@ -1,4 +1,3 @@
-// import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Input } from "@/components/ui/input";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
@@ -12,11 +11,9 @@ import AuthModal from "./../../components/auth/authModal";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
-  // const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
-  // const { productDetails } = useSelector((state) => state.shopProducts);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const key = searchParams.get("keyword");
@@ -81,10 +78,6 @@ function SearchProducts() {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
 
-  // useEffect(() => {
-  //   if (productDetails !== null) setOpenDetailsDialog(true);
-  // }, [productDetails]);
-
   return (
     <div className="container mx-auto md:px-6 px-4 py-8">
       <div className="flex lg:hidden justify-center mb-8">
@@ -112,11 +105,6 @@ function SearchProducts() {
           </div>
         ))}
       </div>
-      {/* <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      /> */}
       <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>
   );

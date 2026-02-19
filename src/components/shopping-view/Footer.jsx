@@ -80,7 +80,6 @@ export default function Footer() {
     };
     mediaLinks();
   }, [dispatch]);
-  console.log(mediaLinks);
 
   return (
     <div className="bg-[#000000] p-5 md:p-10">
@@ -122,7 +121,8 @@ export default function Footer() {
               onClick={handleSendMessage}
               variant="ghost"
               size="icon"
-              className="absolute top-1/2 -translate-y-1/2 z-10">
+              className="absolute top-1/2 -translate-y-1/2 z-10"
+            >
               <MessageCircle className="w-4 h-4" color="black" />
             </Button>
           </div>
@@ -153,7 +153,8 @@ export default function Footer() {
           <div className="flex gap-2 cursor-pointer items-start justify-end">
             <div
               className="flex items-center rounded-full justify-center p-2 bg-white"
-              onClick={scrollToTop}>
+              onClick={scrollToTop}
+            >
               <ArrowUp color="black" />
             </div>
           </div>

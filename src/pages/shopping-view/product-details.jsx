@@ -26,6 +26,7 @@ import StarRatingComponent from "./../../components/common/star-rating";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { addReview, getReviews } from "@/store/shop/review-slice";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ShoppingProductsDetails() {
   const dispatch = useDispatch();
@@ -146,7 +147,6 @@ export default function ShoppingProductsDetails() {
         });
         return isMatch;
       });
-      console.log(filterProducts);
       setRelatedProducts(filterProducts);
     } else {
       setRelatedProducts([]);
@@ -265,8 +265,15 @@ export default function ShoppingProductsDetails() {
     setEnquirySize("");
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-screen w-full mx-auto">
+        <Button disabled size="sm">
+          <Spinner data-icon="inline-start" />
+          Loading...
+        </Button>
+      </div>
+    );
   return (
     <>
       <div className="flex flex-col gap-5 p-8">

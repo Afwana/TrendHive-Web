@@ -7,7 +7,6 @@ import {
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-// import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 import { toast } from "sonner";
 import { fetchAllBrands } from "@/store/shop/brand-slice";
@@ -21,6 +20,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { fetchAllCategories } from "@/store/shop/category-slice";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 function ShoppingHome() {
   const { productList } = useSelector((state) => state.shopProducts);
@@ -29,7 +30,6 @@ function ShoppingHome() {
   const { brandList } = useSelector((state) => state.shopBrand);
   const { cartItems } = useSelector((state) => state.shopCart);
 
-  // const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [api, setApi] = useState();
 
@@ -57,8 +57,6 @@ function ShoppingHome() {
   }
 
   function handleAddtoCart(getCurrentProductId, getTotalStock, sizeSelected) {
-    console.log(getCurrentProductId, getTotalStock, sizeSelected);
-
     if (!user) {
       toast.error("Oops, can't add to cart!!!", {
         description: "Please login to your account.",
@@ -101,10 +99,6 @@ function ShoppingHome() {
       });
     }
   }
-
-  // useEffect(() => {
-  //   if (productDetails !== null) setOpenDetailsDialog(true);
-  // }, [productDetails]);
 
   useEffect(() => {
     if (!api) return;
@@ -177,9 +171,12 @@ function ShoppingHome() {
               <CarouselNext />
             </Carousel>
           ) : (
-            <p className="text-red-500 text-sm font-bold">
-              Load..., Backend is fixing something here....
-            </p>
+            <div className="flex items-center justify-center h-screen w-full mx-auto">
+              <Button disabled size="sm">
+                <Spinner data-icon="inline-start" />
+                Loading...
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -270,12 +267,6 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
-
-      {/* <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      /> */}
 
       <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
     </div>

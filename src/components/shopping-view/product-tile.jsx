@@ -18,11 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories } from "@/store/shop/category-slice";
 
-function ShoppingProductTile({
-  product,
-  // handleGetProductDetails,
-  handleAddtoCart,
-}) {
+function ShoppingProductTile({ product, handleAddtoCart }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [isSizeModalOpen, setIsSizeModalOpen] = useState(false);
   const [enquirySize, setEnquirySize] = useState("");

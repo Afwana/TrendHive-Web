@@ -16,15 +16,8 @@ export default function NavigationSwiper({
   selectedImage,
   setSelectedImage,
 }) {
-  console.log(images);
-
   const swiperRef = useRef(null);
   const slidesPerView = 4;
-
-  // const handleSlideChange = (swiper: SwiperCore) => {
-  //   const start = swiper.activeIndex;
-  //   const end = Math.min(start + slidesPerView, images.length);
-  // };
 
   const handleNext = () => {
     const currentIndex = images.findIndex((image) => image === selectedImage);

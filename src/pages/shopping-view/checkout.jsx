@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
-  // const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ function ShoppingCheckout() {
               ? currentItem?.salePrice
               : currentItem?.price) *
               currentItem?.quantity,
-          0
+          0,
         )
       : 0;
 
@@ -88,10 +87,6 @@ function ShoppingCheckout() {
       setIsProcessing(false);
     }
   }
-
-  // if (approvalURL) {
-  //   window.location.href = approvalURL;
-  // }
 
   return (
     <div className="flex flex-col">
