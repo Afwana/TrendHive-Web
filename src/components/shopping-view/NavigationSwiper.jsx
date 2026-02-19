@@ -60,7 +60,7 @@ export default function NavigationSwiper({
     <div className="flex w-full items-center gap-2">
       <div className="">
         <Button
-          className="border border-slate-200 bg-white"
+          className="border border-slate-200 bg-black"
           onClick={handlePrev}
           isIconOnly
         >
@@ -86,7 +86,7 @@ export default function NavigationSwiper({
                 alt="product images"
                 className={
                   selectedImage === item
-                    ? "rounded-xl border-3 border-black object-cover w-full h-[80px] md:h-[100px] lg:h-[150px]"
+                    ? "rounded-xl border-2 border-black object-cover w-full h-[80px] md:h-[100px] lg:h-[150px]"
                     : "rounded-xl object-cover h-[80px] md:h-[100px] lg:h-[150px] w-full"
                 }
               />
@@ -96,7 +96,7 @@ export default function NavigationSwiper({
       </Swiper>
       <div className="">
         <Button
-          className="border border-slate-200 bg-white"
+          className="border border-slate-200 bg-black"
           onClick={handleNext}
           isIconOnly
         >
