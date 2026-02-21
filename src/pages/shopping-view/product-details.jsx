@@ -61,7 +61,7 @@ export default function ShoppingProductsDetails() {
     dispatch(fetchProductDetails(id));
     dispatch(fetchAllCategories());
     dispatch(fetchAllBrands());
-    dispatch(fetchAllFilteredProducts());
+    dispatch(fetchAllFilteredProducts({}));
   }, [id, dispatch]);
 
   useEffect(() => {
@@ -471,51 +471,6 @@ export default function ShoppingProductsDetails() {
           </div>
         </div>
       </div>
-      {relatedProducts && relatedProducts.length > 0 ? (
-        <div className="flex justify-start flex-col gap-5 mt-10">
-          <h1 className="flex justify-start text-lg md:text-xl lg:text-2xl font-semibold">
-            Related Products
-          </h1>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {relatedProducts.map((productItem, index) => (
-              <Card
-                key={index}
-                className="w-full max-w-sm mx-auto pt-0 cursor-pointer"
-                onClick={() => navigate(`/admin/products/${productItem?._id}`)}
-              >
-                <div>
-                  <div className="relative">
-                    <img
-                      src={productItem?.thumbnail}
-                      alt={productItem?.title}
-                      className="w-full h-[300px] object-cover rounded-t-lg"
-                    />
-                  </div>
-                  <CardContent>
-                    <h2 className="text-xl font-bold mb-2 mt-2">
-                      {productItem?.title}
-                    </h2>
-                    <div className="flex justify-between items-center mb-2">
-                      <span
-                        className={`${
-                          productItem?.salePrice > 0 ? "line-through" : ""
-                        } text-lg font-semibold text-primary`}
-                      >
-                        &#8377; {productItem?.price}
-                      </span>
-                      {productItem?.salePrice > 0 ? (
-                        <span className="text-lg font-bold">
-                          &#8377; {productItem?.salePrice}
-                        </span>
-                      ) : null}
-                    </div>
-                  </CardContent>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      ) : null}
       <div className="flex p-8 flex-col gap-5">
         <p className="text-xl font-semibold">Let&apos;s Review It!</p>
         <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-5 w-full">
@@ -580,6 +535,53 @@ export default function ShoppingProductsDetails() {
             </Button>
           </div>
         </div>
+      </div>
+      <div className="pb-8 px-8">
+        {relatedProducts && relatedProducts.length > 0 ? (
+          <div className="flex justify-start flex-col gap-5 mt-10">
+            <h1 className="flex justify-start text-lg md:text-xl lg:text-2xl font-semibold">
+              Related Products
+            </h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+              {relatedProducts.map((productItem, index) => (
+                <Card
+                  key={index}
+                  className="w-full max-w-sm mx-auto pt-0 cursor-pointer"
+                  onClick={() => navigate(`/shop/products/${productItem?._id}`)}
+                >
+                  <div>
+                    <div className="relative">
+                      <img
+                        src={productItem?.thumbnail}
+                        alt={productItem?.title}
+                        className="w-full h-[300px] object-cover rounded-t-lg"
+                      />
+                    </div>
+                    <CardContent>
+                      <h2 className="text-xl font-bold mb-2 mt-2">
+                        {productItem?.title}
+                      </h2>
+                      <div className="flex justify-between items-center mb-2">
+                        <span
+                          className={`${
+                            productItem?.salePrice > 0 ? "line-through" : ""
+                          } text-lg font-semibold text-primary`}
+                        >
+                          &#8377; {productItem?.price}
+                        </span>
+                        {productItem?.salePrice > 0 ? (
+                          <span className="text-lg font-bold">
+                            &#8377; {productItem?.salePrice}
+                          </span>
+                        ) : null}
+                      </div>
+                    </CardContent>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
       <div className="flex items-end bottom-0 justify-between mt-20 p-5">
         <p className="text-sm md:text-base font-medium">
