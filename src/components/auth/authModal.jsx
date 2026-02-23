@@ -35,7 +35,8 @@ const validatePhoneNumber = (phoneNumber) => {
 const validatePassword = (password) => {
   // At least one uppercase, one lowercase, one digit, one special char, min 8 chars
   const regex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    /^[A-Za-z\d@$!%*?&]{8,}$/;
   return regex.test(password);
 };
 
@@ -66,16 +67,14 @@ function AuthModal({ open, setOpen, redirectPath }) {
       if (!formData.password) {
         newErrors.password = "Password is required";
       } else if (!validatePassword(formData.password)) {
-        newErrors.password =
-          "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long";
+        newErrors.password = "Password must be at least 8 characters long";
       }
     }
 
     if (isForgetPassword && !formData.newPassword) {
       newErrors.newPassword = "New password is required";
     } else if (isForgetPassword && !validatePassword(formData.newPassword)) {
-      newErrors.newPassword =
-        "Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and be at least 8 characters long";
+      newErrors.newPassword = "Password must be at least 8 characters long";
     }
 
     if (register && !formData.userName) {
