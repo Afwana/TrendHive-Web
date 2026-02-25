@@ -366,7 +366,7 @@ export default function ShoppingProductsDetails() {
               <img
                 src={selectedImage ?? "/placeholder.jpeg"}
                 alt={`Thumbnail of ${productDetails?.title}`}
-                className="object-contain md:object-cover w-full md:h-[500px] rounded-lg"
+                className="object-fill w-full md:h-[750px] rounded-lg"
               />
             </div>
             {productDetails?.images && (
@@ -377,6 +377,31 @@ export default function ShoppingProductsDetails() {
                 selectedImage={selectedImage}
               />
             )}
+            {/* Write review */}
+            <div className="flex-col flex gap-2 mt-8">
+              <Label className="text-xl">Write a review</Label>
+              <div className="flex gap-1">
+                <StarRatingComponent
+                  rating={rating}
+                  handleRatingChange={handleRatingChange}
+                />
+              </div>
+              <div className="px-2">
+                <Input
+                  name="reviewMsg"
+                  value={reviewMsg}
+                  onChange={(event) => setReviewMsg(event.target.value)}
+                  className="w-full h-[150px]"
+                  placeholder="Write a review..."
+                />
+              </div>
+              <Button
+                onClick={handleAddReview}
+                disabled={reviewMsg.trim() === ""}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
           <div className="flex flex-col gap-5">
             {/* price details */}
@@ -468,71 +493,76 @@ export default function ShoppingProductsDetails() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex p-8 flex-col gap-5">
-        <p className="text-xl font-semibold">Let&apos;s Review It!</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-5 w-full">
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center gap-2 mt-2">
-              <div className="flex items-center gap-0.5">
-                <StarRatingComponent rating={averageReview} />
-              </div>
-              <span className="text-muted-foreground">
-                ({averageReview.toFixed(2)})
-              </span>
-            </div>
-            <div className="grid gap-6">
-              {reviews && reviews.length > 0 ? (
-                reviews.map((reviewItem, index) => (
-                  <div key={index} className="flex gap-4">
-                    <Avatar className="w-10 h-10 border">
-                      <AvatarFallback>
-                        {reviewItem?.userName[0].toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold">{reviewItem?.userName}</h3>
-                      </div>
-                      <div className="flex items-center gap-0.5">
-                        <StarRatingComponent rating={reviewItem?.reviewValue} />
-                      </div>
-                      <p className="text-muted-foreground">
-                        {reviewItem.reviewMessage}
-                      </p>
+            {/* review */}
+            <div className="flex flex-col gap-5 p-3">
+              <p className="text-xl font-semibold">Reviews</p>
+              <div className="grid grid-cols-1 items-start gap-5 w-full">
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      <StarRatingComponent rating={averageReview} />
                     </div>
+                    <span className="text-muted-foreground">
+                      ({averageReview.toFixed(2)})
+                    </span>
                   </div>
-                ))
-              ) : (
-                <h1>No Reviews</h1>
-              )}
+                  <div className="grid gap-6 h-[500px] overflow-y-auto">
+                    {reviews && reviews.length > 0 ? (
+                      reviews.map((reviewItem, index) => (
+                        <div key={index} className="flex gap-4">
+                          <Avatar className="w-10 h-10 border">
+                            <AvatarFallback>
+                              {reviewItem?.userName[0].toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="grid gap-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold">
+                                {reviewItem?.userName}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-0.5">
+                              <StarRatingComponent
+                                rating={reviewItem?.reviewValue}
+                              />
+                            </div>
+                            <p className="text-muted-foreground">
+                              {reviewItem?.reviewMessage}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <h1>No Reviews in list..!</h1>
+                    )}
+                  </div>
+                </div>
+                {/* <div className="flex-col flex gap-2 mt-8">
+                  <Label>Write a review</Label>
+                  <div className="flex gap-1">
+                    <StarRatingComponent
+                      rating={rating}
+                      handleRatingChange={handleRatingChange}
+                    />
+                  </div>
+                  <div className="px-2">
+                    <Input
+                      name="reviewMsg"
+                      value={reviewMsg}
+                      onChange={(event) => setReviewMsg(event.target.value)}
+                      className="w-full h-[150px]"
+                      placeholder="Write a review..."
+                    />
+                  </div>
+                  <Button
+                    onClick={handleAddReview}
+                    disabled={reviewMsg.trim() === ""}
+                  >
+                    Submit
+                  </Button>
+                </div> */}
+              </div>
             </div>
-          </div>
-          <div className="flex-col flex gap-2">
-            <Label>Write a review</Label>
-            <div className="flex gap-1">
-              <StarRatingComponent
-                rating={rating}
-                handleRatingChange={handleRatingChange}
-              />
-            </div>
-            <div className="px-2">
-              <Input
-                name="reviewMsg"
-                value={reviewMsg}
-                onChange={(event) => setReviewMsg(event.target.value)}
-                className="w-full h-[150px]"
-                placeholder="Write a review..."
-              />
-            </div>
-            <Button
-              onClick={handleAddReview}
-              disabled={reviewMsg.trim() === ""}
-            >
-              Submit
-            </Button>
           </div>
         </div>
       </div>
